@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="66d4305a-1e87-47b8-91aa-bbe7929e3d4a" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/travelapp/paginators.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/travelproject/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/travelproject/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/travelproject/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/travelproject/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../travelapp-react/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../travelapp-react/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../travelapp-react/package-lock.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../travelapp-react/package.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../travelapp-react/public/favicon.ico" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../travelapp-react/public/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../travelapp-react/public/logo192.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../travelapp-react/public/logo512.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../travelapp-react/public/manifest.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../travelapp-react/public/robots.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../travelapp-react/src/ActionCreators/UserCreators.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../travelapp-react/src/App.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../travelapp-react/src/App.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../travelapp-react/src/App.test.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../travelapp-react/src/assets/fonts/nucleo-icons.eot" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../travelapp-react/src/assets/fonts/nucleo-icons.ttf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../travelapp-react/src/assets/fonts/nucleo-icons.woff" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../travelapp-react/src/assets/fonts/nucleo-icons.woff2" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../travelapp-react/src/assets/img/channel-g751808873_1920.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../travelapp-react/src/assets/img/hallstatt-g22b586807_1920.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../travelapp-react/src/assets/img/logo.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../travelapp-react/src/assets/img/new_logo.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../travelapp-react/src/assets/img/taj-mahal-g37ee517b0_1920.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../travelapp-react/src/axios/loginFacebook.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../travelapp-react/src/configs/Apis.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../travelapp-react/src/index.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../travelapp-react/src/index.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../travelapp-react/src/layouts/Body.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../travelapp-react/src/layouts/Body_Info.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../travelapp-react/src/layouts/Footer.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../travelapp-react/src/layouts/Footer_HotTour.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../travelapp-react/src/layouts/Header.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../travelapp-react/src/layouts/IndexHeader.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../travelapp-react/src/layouts/IndexNavbar.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../travelapp-react/src/layouts/ScrollToTop.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../travelapp-react/src/layouts/Service.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../travelapp-react/src/logo.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../travelapp-react/src/pages/Home.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../travelapp-react/src/pages/Login.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../travelapp-react/src/pages/Register.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../travelapp-react/src/pages/Tour.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../travelapp-react/src/reducers/RootReducer.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../travelapp-react/src/reducers/UserReducer.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../travelapp-react/src/reportWebVitals.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../travelapp-react/src/setupTests.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../travelapp-react/yarn.lock" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectId" id="28BIRHbdWdDlV3civBcuyDbsvJU" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="66d4305a-1e87-47b8-91aa-bbe7929e3d4a" name="Changes" comment="" />
+      <created>1650683543950</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1650683543950</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>
