@@ -19,6 +19,7 @@ from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from rest_framework import permissions
 import debug_toolbar
+from django.conf.urls.static import static
 from django.conf import settings
 from django.views.generic import TemplateView
 
@@ -52,4 +53,4 @@ urlpatterns = [
     path('', TemplateView.as_view(template_name='index.html')),
     # login facebook
     re_path(r'^auth/', include('drf_social_oauth2.urls', namespace='drf')),
-]
+]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

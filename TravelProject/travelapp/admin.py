@@ -1,13 +1,23 @@
 from django.contrib import admin
-from .models import Tour, TourGuide, Ticket, Department, Arrival, Transport, Hotel, Customer, User
+from .models import Tour,  User,Category,Tag, Comment
+    # ,TourGuide, Ticket, Department,Arrival, Transport, Hotel, Customer,
 from django.urls import path
 from django.utils.html import mark_safe
 from django.template.response import TemplateResponse
 from django.db.models import Count
 from ckeditor_uploader.widgets import CKEditorUploadingWidget
+from django import forms
+
+class TourForm(forms.ModelForm):
+    content = forms.CharField(widget=CKEditorUploadingWidget)
+
+    class Meta:
+        model = Tour
+        fields = '__all__'
+
 
 class TourAdmin(admin.ModelAdmin):
-    list_display = ("id", "name_tour", "active")
+    form = TourForm
 
 class TourGuideAdmin(admin.ModelAdmin):
     readonly_fields = ['imageTourGuide']
@@ -38,12 +48,22 @@ class TourGuideAdmin(admin.ModelAdmin):
 #                                     'stats': stats
 #                                 })
 
+
+class CategoryAdmin(admin.ModelAdmin):
+    search_fields = ['name']
+    list_filter = ['name', 'created_date']
+    list_display = ['id', 'name', 'created_date']
+
+
 admin.site.register(User)
-admin.site.register(Tour, TourAdmin)
-admin.site.register(TourGuide)
-admin.site.register(Ticket)
-admin.site.register(Department)
-admin.site.register(Arrival)
-admin.site.register(Transport)
-admin.site.register(Hotel)
-admin.site.register(Customer)
+admin.site.register(Category)
+admin.site.register(Tour)
+# admin.site.register(TourGuide)
+# admin.site.register(Ticket)
+# admin.site.register(Department)
+# admin.site.register(Arrival)
+# admin.site.register(Transport)
+# admin.site.register(Hotel)
+# admin.site.register(Customer)
+admin.site.register(Tag)
+admin.site.register(Comment)
