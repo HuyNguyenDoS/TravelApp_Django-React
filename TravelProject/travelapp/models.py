@@ -190,3 +190,12 @@ class Action(ActionBase):
     ]
     type = models.PositiveSmallIntegerField(choices=ACTIONS, default=LIKE)
 
+class Comment(ModelBase):
+    content = models.TextField()
+    tour = models.ForeignKey(Tour, related_name='comments', on_delete=models.CASCADE)
+    creator = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.content
+
+
