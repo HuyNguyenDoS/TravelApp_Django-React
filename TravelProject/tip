@@ -1,0 +1,7 @@
+/////// Create staff user
+python manage.py shell
+from travelapp.models import *
+
+user = User.objects.create_user('john', 'lennon@thebeatles.com', 'johnpassword')
+user.is_staff=True
+user.save()

@@ -1,16 +1,9 @@
 from rest_framework import serializers
-from .models import User, Department, Tour, Hotel, Transport, Arrival, Action, Rating, TourGuide, Comment
+from .models import User, Department, Tour, Hotel, Transport, Arrival, Action, Rating, TourGuide, Comment, TourView
 from rest_framework.serializers import ModelSerializer, SerializerMethodField
 
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ['username', 'password', 'first_name', 'avatar',
-                  'last_name', 'email', 'date_joined', 'id']
-        extra_kwargs = {
-            'password': {'write_only': 'true'}
-        }
 
+class UserSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         data = validated_data.copy()
 
@@ -19,6 +12,14 @@ class UserSerializer(serializers.ModelSerializer):
         u.save()
 
         return u
+
+    class Meta:
+        model = User
+        fields = ['username', 'password', 'first_name', 'avatar',
+                  'last_name', 'email', 'date_joined', 'id', 'is_staff']
+        extra_kwargs = {
+            'password': {'write_only': 'true'}
+        }
 
 
 # class PostSerializer(serializers.ModelSerializer):
@@ -39,20 +40,24 @@ class HotelSerializer(serializers.ModelSerializer):
         model = Hotel
         fields = ['name_hotel']
 
+
 class ArrivalSerializer(serializers.ModelSerializer):
     class Meta:
         model = Arrival
         fields = ['name_arrival', 'address']
+
 
 class TourguideSerializer(serializers.ModelSerializer):
     class Meta:
         model = TourGuide
         fields = ['name_tourguide', 'imageTourGuide', 'department']
 
+
 class TransportSerializer(serializers.ModelSerializer):
     class Meta:
         model = Transport
         fields = ['id', 'name_transport', 'seat', 'name_tour']
+
 
 class TourSerializer(serializers.ModelSerializer):
     image = serializers.SerializerMethodField(source='imageTour')
@@ -73,7 +78,7 @@ class TourSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tour
         fields = ['name_tour', 'created_date', 'updated_date', 'address', 'hotels', 'tourguide', 'arrivals'
-                  , 'imageTour']
+            , 'imageTour', 'price']
 
 
 class TourDetailSerializer(TourSerializer):
@@ -82,6 +87,11 @@ class TourDetailSerializer(TourSerializer):
         fields = TourSerializer.Meta.fields
 
 
+# action, like, rating, view
+class TourViewSerializer(ModelSerializer):
+    class Meta:
+        model = TourView
+        fields = ["id", "views", "tour"]
 
 
 class ActionSerializer(serializers.ModelSerializer):
@@ -89,10 +99,12 @@ class ActionSerializer(serializers.ModelSerializer):
         model = Action
         fields = ["id", "type", "create_date"]
 
+
 class RateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Rating
         fields = ["id", "type", "create_date"]
+
 
 class CommentSerializer(serializers.ModelSerializer):
     creator = SerializerMethodField()

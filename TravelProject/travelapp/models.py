@@ -105,12 +105,14 @@ class Tour(ModelBase):
     address = models.TextField()
     phone = models.TextField()
     imageTour = models.ImageField(null=True, blank=True, upload_to='imageTour/%Y/%m')
+    price = models.IntegerField(default=0)
 
     tourguide = models.ForeignKey(TourGuide, related_name="Tour", null=True, on_delete=models.SET_NULL)
     customers = models.ManyToManyField('Customer')
     hotels = models.ManyToManyField('Hotel')
     transports = models.ManyToManyField('Transport')
     arrivals = models.ManyToManyField('Arrival')
+
 
     def __str__(self):
         return self.name_tour
@@ -170,7 +172,12 @@ class ActionBase(models.Model):
     class Meta:
         abstract = True
 
-# action like and rating
+# action, like, rating, view
+
+class TourView(ModelBase):
+    views = models.IntegerField(default=0)
+    tour = models.OneToOneField(Tour, on_delete=models.CASCADE)
+
 class Rating(ActionBase):
     one_star, two_star, three_star, four_star, five_star = range(5)
     ACTIONS = [

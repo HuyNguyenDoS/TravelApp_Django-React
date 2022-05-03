@@ -1,15 +1,29 @@
-import { Container, FormControl, Navbar, Nav, Button, Form } from "react-bootstrap";
+import { useState ,useEffect } from "react";
+import { Container, Navbar, Nav } from "react-bootstrap";
 import React from 'react'
 import { Link } from 'react-router-dom';
-
 import { useDispatch, useSelector } from 'react-redux';
 import cookies from 'react-cookies';
 import { logoutUser } from '../ActionCreators/UserCreators';
+import Api, { endpoints } from '../configs/Apis';
 
 export default function Header() {
+
+    const [categories, setCategories] = useState([])
     const user = useSelector(state => state.user.user)
     const dispatch = useDispatch()
 
+
+    useEffect(() => {
+      let loadCategories = async () => {
+          let res = await Api.get(endpoints['categories'])
+
+          setCategories(res.data)
+      }
+      
+      loadCategories()
+      }, [])
+      
     const logout = (event) => {
         event.preventDefault()
 
@@ -42,11 +56,11 @@ export default function Header() {
             <Navbar.Collapse id="basic-navbar-nav">
               <Nav className="me-auto">
                 <Link className="nav-link" to="/">Trang chu</Link>
-                {/* {categories.map(c => {
+                {categories.map(c => {
                   let path = `/?category_id=${c.id}`
                   return <Link className="nav-link" to={path}>{c.name}</Link>
                 })
-                } */}
+                }
 
                 {path}
               </Nav>

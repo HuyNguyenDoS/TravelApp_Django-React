@@ -8,7 +8,7 @@ router = routers.DefaultRouter()
 router.register(prefix='users', viewset=views.UserViewSet, basename='user')
 
 #like, rating, comment
-
+router.register("comments", views.CommentViewSet, 'comment')
 
 # information about tour
 router.register(prefix='departments', viewset=views.DepartmentViewSet, basename='department')

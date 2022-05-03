@@ -1,5 +1,4 @@
 from typing import Union
-
 from django.http import Http404
 from django.shortcuts import render, get_object_or_404
 from drf_yasg.utils import swagger_auto_schema
@@ -10,10 +9,11 @@ from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, FormParser
 from django.conf import settings
 from django.views.generic import View
-from .models import User, Department, Tour, Action, TourGuide, Hotel, Arrival, Rating
+from .models import User, Department, Tour, Action, TourGuide, Hotel, Arrival, Rating, Comment, TourView
 from .serializers import UserSerializer, DepartmentSeriliazer, TourSerializer, \
     ActionSerializer, RateSerializer, TourDetailSerializer, TourguideSerializer, \
-    HotelSerializer, ArrivalSerializer, CommentSerializer
+    HotelSerializer, ArrivalSerializer, CommentSerializer, TourViewSerializer
+
 
 class UserViewSet(viewsets.ViewSet, generics.CreateAPIView):
     queryset = User.objects.filter(is_active=True)
@@ -34,7 +34,7 @@ class UserViewSet(viewsets.ViewSet, generics.CreateAPIView):
 
 class AuthInfo(APIView):
     def get(self, request):
-        return Response(settings.OAUTH2_INFO, status=status.HTTP_200_OK )
+        return Response(settings.OAUTH2_INFO, status=status.HTTP_200_OK)
 
 
 class DepartmentViewSet(viewsets.ViewSet, generics.CreateAPIView):
@@ -71,6 +71,7 @@ class TourguideViewSet(viewsets.ViewSet, generics.RetrieveAPIView):
 
         return query
 
+
 class HotelViewSet(viewsets.ViewSet, generics.ListAPIView):
     queryset = Hotel.objects.all()
     serializer_class = HotelSerializer
@@ -83,6 +84,7 @@ class HotelViewSet(viewsets.ViewSet, generics.ListAPIView):
             query = query.filter(name__icontains=kw)
 
         return query
+
 
 class ArrivalViewSet(viewsets.ViewSet, generics.RetrieveAPIView):
     queryset = Arrival.objects.all()
@@ -102,6 +104,7 @@ class TourViewSet(viewsets.ViewSet, generics.ListAPIView):
     queryset = Tour.objects.filter(active=True)
     serializer_class = TourDetailSerializer
 
+    # create Retrieve API to show tour detail
     def retrieve(self, request, pk):
         try:
             tour = Tour.objects.get(pk=pk)
@@ -111,13 +114,11 @@ class TourViewSet(viewsets.ViewSet, generics.ListAPIView):
 
         return Response(TourDetailSerializer(tour).data)
 
-
     def get_permissions(self):
         if self.action in ['add_comment', 'take_action', 'rate']:
             return [permissions.IsAuthenticated()]
 
         return [permissions.AllowAny()]
-
 
     @action(methods=['post'], detail=True, url_path='like')
     def take_action(self, request, pk):
@@ -147,7 +148,29 @@ class TourViewSet(viewsets.ViewSet, generics.ListAPIView):
             return Response(RateSerializer(r).data,
                             status=status.HTTP_200_OK)
 
+    @action(methods=['post'], detail=True, url_path="add-comment")
+    def add_comment(self, request, pk):
+        content = request.data.get('content')
+        if content:
+            c = Comment.objects.create(content=content,
+                                       tour=self.get_object(),
+                                       creator=request.user)
 
+            return Response(CommentSerializer(c, context={"request": request}).data,
+                            status=status.HTTP_201_CREATED)
+
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    @action(methods=['get'], detail=True, url_path='views')
+    def inc_view(self, request, pk):
+        v, created = TourView.objects.get_or_create(tour=self.get_object())
+        v.views = F('views') + 1
+        v.save()
+
+        # v.views = int(v.views)
+        v.refresh_from_db()
+
+        return Response(TourViewSerializer(v).data, status=status.HTTP_200_OK)
 
     @action(methods=['get'], detail=True, url_path="comments")
     def get_comments(self, request, pk):
@@ -162,8 +185,25 @@ class TourDetailViewSet(viewsets.ViewSet, generics.RetrieveAPIView):
     serializer_class = TourDetailSerializer
 
 
+class CommentViewSet(viewsets.ViewSet, generics.DestroyAPIView,
+                     generics.UpdateAPIView):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
-#login facebook
+    def destroy(self, request, *args, **kwargs):
+        if request.user == self.get_object().creator:
+            return super().destroy(request, *args, **kwargs)
+
+        return Response(status=status.HTTP_403_FORBIDDEN)
+
+    def partial_update(self, request, *args, **kwargs):
+        if request.user == self.get_object().creator:
+            return super().partial_update(request, *args, **kwargs)
+
+        return Response(status=status.HTTP_403_FORBIDDEN)
+
+# login facebook
 # class PostList(generics.ListAPIView):
 #
 #     serializer_class = PostSerializer

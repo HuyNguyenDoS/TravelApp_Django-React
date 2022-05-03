@@ -1,13 +1,15 @@
+import React from 'react'
 import { Card,Col,Row} from "react-bootstrap"
 
 export default function Footer_HotTour() {
     return (
         <>
-            <Row >
+            <Row style={{backgroundColor:"white",padding:"10px"}}>
                 <Card.Header className="text-center text-success" as="h1">ĐIỂM ĐẾN ĐANG HOT
                 <div class="line">
                     <hr/>
-                    </div></Card.Header>
+                    </div>
+                </Card.Header>
             </Row>
 
             <Row xs={{ cols: 1 }} md={{ cols: 3 }} className="g-4">
