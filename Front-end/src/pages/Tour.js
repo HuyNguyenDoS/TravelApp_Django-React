@@ -4,7 +4,7 @@ import Apis, { endpoints } from '../configs/Apis'
 
 
 export default function Post(props) {
-    let path = `/tourdetail/${props.obj.tour_id}/`
+    let path = `/tours/${props.obj.tour_id}/`
   return (
     <>
         

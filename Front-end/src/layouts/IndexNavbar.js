@@ -9,6 +9,8 @@ import { logoutUser } from "../ActionCreators/UserCreators";
 import Api, { endpoints } from '../configs/Apis';
 import { Button } from "bootstrap";
 import { useNavigate } from 'react-router-dom';
+import ScrollToTop from "./ScrollToTop";
+import { select } from "react-cookies";
 
 export default function IndexNavbar() {
     const [navbarColor, setNavbarColor] = useState("navbar-transparent");
@@ -77,19 +79,36 @@ export default function IndexNavbar() {
         
           path = <>
               <div className='user-img'>
-                  <Link className='img-user' to='/'>
+                  <Link className='img-user text-success' to='/'>
                       <img className='avt' src={'/static' + user.avatar} alt='avatar'/>{user.username}
                   </Link>
               </div>
               <Link className='nav-link text-success' to='#' onClick={logout}>Logout</Link>
           </>
       }
+        const [showTopBtn, setShowTopBtn] = useState(false);
+        useEffect(() => {
+          window.addEventListener('scroll', () => {
+            if (window.scrollY > 400) {
+              setShowTopBtn(true);
+            } else {
+              setShowTopBtn(false);
+            }
+          });
+        }, []);
+        const goToTop = () => {
+          window.scrollTo({
+            top: 0,
+            behavior: 'smooth',
+          });
+        };
+
       return (
         <Navbar className={classnames("fixed-top", navbarColor)} expand="lg" >
           <Container>
             <div className="navbar-translate">
               <NavbarBrand
-                href="#home"
+                onClick={goToTop}
               >
                 TravelTour
               </NavbarBrand>
@@ -109,19 +128,22 @@ export default function IndexNavbar() {
                  {path}
                 </NavLink>
               </NavItem>
+              <NavItem>
+                <Form  className="d-flex" onSubmit={search}>
+                    <Form.Group >
+                        <FormControl style={{marginLeft:10 ,color:"green"}}
+                          type="search"
+                          placeholder="Nhập từ khóa..."
+                          className="mr-2"
+                          aria-label="Search"
+                          value={q}
+                          onChange={(event) => setQ(event.target.value)}
+                        />
+                      </Form.Group>
+                      <button style={{marginLeft:12 ,color:"green",borderRadius:10}} type="submit" variant="outline-success">Tìm</button>
+                  </Form>
+              </NavItem>
               
-                {/* <Form className="d-flex" onSubmit={search}>
-                    <FormControl
-                      type="search"
-                      placeholder="Nhap tu khoa..."
-                      className="mr-2"
-                      aria-label="Search"
-                      value={q}
-                      onChange={(event) => setQ(event.target.value)}
-                    />
-                    <Button type="submit" variant="outline-success">Tim</Button>
-                </Form>
-               */}
               </Navbar.Collapse> 
           </Container>
         </Navbar>

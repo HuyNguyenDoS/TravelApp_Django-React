@@ -18,7 +18,7 @@ export default function Body() {
                 <Routes>
                     <Route path ='/' element ={<Home />} /> 
                     <Route  path ='/login' element ={<Login />} />
-                    <Route  path ='/tourdetail/:tourId/' element ={<TourDetail />} />
+                    <Route  path ='/tours/:tourId/' element ={<TourDetail />} />
                     <Route  path ='/register' element ={<Register />} />
                 </Routes> 
                 <Footer />

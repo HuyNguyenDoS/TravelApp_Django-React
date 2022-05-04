@@ -8,9 +8,10 @@ export let endpoints = {
     'current-user': '/users/current-user/',
     'register': '/users/',
     'tours': '/tours/',
-    'tour-detail': (tourId) => `/tourdetail/${tourId}/`,
+    'tour-detail': (tourId) => `/tours/${tourId}/`,
     'comments': (tourId) => `/tours/${tourId}/comments/`,
     'add-comment': (tourId) => `/tours/${tourId}/add-comment/`,
+    "rating": (tourId) => `/tours/${tourId}/rating/`
 }
 
 
