@@ -6,13 +6,16 @@ from rest_framework import viewsets, generics, status, permissions, filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from .paginators import BasePaginator
 from rest_framework.parsers import MultiPartParser, FormParser
 from django.conf import settings
 from django.views.generic import View
-from .models import User, Department, Tour, Action, TourGuide, Hotel, Arrival, Rating, Comment, TourView
+from .models import User, Department, Tour, Action, TourGuide, Hotel, Arrival, Rating, Comment, \
+                    TourView, Category
 from .serializers import UserSerializer, DepartmentSeriliazer, TourSerializer, \
     ActionSerializer, RateSerializer, TourDetailSerializer, TourguideSerializer, \
-    HotelSerializer, ArrivalSerializer, CommentSerializer, TourViewSerializer
+    HotelSerializer, ArrivalSerializer, CommentSerializer, TourViewSerializer, \
+    CategorySerializer
 
 
 class UserViewSet(viewsets.ViewSet, generics.CreateAPIView):
@@ -36,6 +39,9 @@ class AuthInfo(APIView):
     def get(self, request):
         return Response(settings.OAUTH2_INFO, status=status.HTTP_200_OK)
 
+class CategoryViewSet(viewsets.ViewSet, generics.ListAPIView):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
 
 class DepartmentViewSet(viewsets.ViewSet, generics.CreateAPIView):
     queryset = Department.objects.all()
@@ -103,6 +109,7 @@ class ArrivalViewSet(viewsets.ViewSet, generics.RetrieveAPIView):
 class TourViewSet(viewsets.ViewSet, generics.ListAPIView):
     queryset = Tour.objects.filter(active=True)
     serializer_class = TourDetailSerializer
+    pagination_class = BasePaginator
 
     # create Retrieve API to show tour detail
     def retrieve(self, request, pk):
@@ -119,6 +126,19 @@ class TourViewSet(viewsets.ViewSet, generics.ListAPIView):
             return [permissions.IsAuthenticated()]
 
         return [permissions.AllowAny()]
+
+    @action(methods=['post'], detail=True, url_path="add-comment")
+    def add_comment(self, request, pk):
+        content = request.data.get('content')
+        if content:
+            c = Comment.objects.create(content=content,
+                                       tour=self.get_object(),
+                                       creator=request.user)
+
+            return Response(CommentSerializer(c, context={"request": request}).data,
+                            status=status.HTTP_201_CREATED)
+
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
     @action(methods=['post'], detail=True, url_path='like')
     def take_action(self, request, pk):
@@ -148,22 +168,10 @@ class TourViewSet(viewsets.ViewSet, generics.ListAPIView):
             return Response(RateSerializer(r).data,
                             status=status.HTTP_200_OK)
 
-    @action(methods=['post'], detail=True, url_path="add-comment")
-    def add_comment(self, request, pk):
-        content = request.data.get('content')
-        if content:
-            c = Comment.objects.create(content=content,
-                                       tour=self.get_object(),
-                                       creator=request.user)
-
-            return Response(CommentSerializer(c, context={"request": request}).data,
-                            status=status.HTTP_201_CREATED)
-
-        return Response(status=status.HTTP_400_BAD_REQUEST)
-
     @action(methods=['get'], detail=True, url_path='views')
     def inc_view(self, request, pk):
         v, created = TourView.objects.get_or_create(tour=self.get_object())
+        from django.db.models import F
         v.views = F('views') + 1
         v.save()
 
@@ -174,10 +182,10 @@ class TourViewSet(viewsets.ViewSet, generics.ListAPIView):
 
     @action(methods=['get'], detail=True, url_path="comments")
     def get_comments(self, request, pk):
-        l = self.get_object()
-        return Response(
-            CommentSerializer(l.comment_set.order_by("-id").all(), many=True, context={"request": self.request}).data,
-            status=status.HTTP_200_OK)
+        tour = self.get_object()
+        comments = tour.comments.select_related('creator').filter(active=True)
+        return Response(CommentSerializer(comments, many=True).data,
+                        status=status.HTTP_200_OK)
 
 
 class TourDetailViewSet(viewsets.ViewSet, generics.RetrieveAPIView):
@@ -202,6 +210,7 @@ class CommentViewSet(viewsets.ViewSet, generics.DestroyAPIView,
             return super().partial_update(request, *args, **kwargs)
 
         return Response(status=status.HTTP_403_FORBIDDEN)
+
 
 # login facebook
 # class PostList(generics.ListAPIView):

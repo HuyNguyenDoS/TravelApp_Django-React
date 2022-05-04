@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from .models import User, Department, Tour, Hotel, Transport, Arrival, Action, Rating, TourGuide, Comment, TourView
+from .models import User, Department, Tour, Hotel, Transport, Arrival, Action, Rating, TourGuide, Comment, \
+                    TourView, Category
 from rest_framework.serializers import ModelSerializer, SerializerMethodField
 
 
@@ -77,8 +78,8 @@ class TourSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Tour
-        fields = ['name_tour', 'created_date', 'updated_date', 'address', 'hotels', 'tourguide', 'arrivals'
-            , 'imageTour', 'price']
+        fields = ['id', 'name_tour', 'created_date', 'updated_date', 'address', 'hotels', 'tourguide', 'arrivals',
+             'imageTour', 'price']
 
 
 class TourDetailSerializer(TourSerializer):
@@ -86,6 +87,10 @@ class TourDetailSerializer(TourSerializer):
         model = TourSerializer.Meta.model
         fields = TourSerializer.Meta.fields
 
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = "__all__"
 
 # action, like, rating, view
 class TourViewSerializer(ModelSerializer):

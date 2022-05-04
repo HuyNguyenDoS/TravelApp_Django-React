@@ -11,6 +11,7 @@ router.register(prefix='users', viewset=views.UserViewSet, basename='user')
 router.register("comments", views.CommentViewSet, 'comment')
 
 # information about tour
+router.register("categories", views.CategoryViewSet, 'category')
 router.register(prefix='departments', viewset=views.DepartmentViewSet, basename='department')
 router.register(prefix='tours', viewset=views.TourViewSet, basename='tour')
 router.register(prefix='tourguides', viewset=views.TourguideViewSet, basename='tourguide')

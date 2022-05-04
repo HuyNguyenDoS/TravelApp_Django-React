@@ -29,11 +29,11 @@ def upload_to(instance, filename):
     return 'posts/{filename}'.format(filename=filename)
 
 
-# class Category(models.Model):
-#     name = models.CharField(max_length=100)
-#
-#     def __str__(self):
-#         return self.name
+class Category(models.Model):
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
 #
 #
 # class Post(models.Model):
@@ -113,6 +113,7 @@ class Tour(ModelBase):
     transports = models.ManyToManyField('Transport')
     arrivals = models.ManyToManyField('Arrival')
 
+    category = models.ForeignKey(Category, related_name='tours', null=True, on_delete=models.SET_NULL)
 
     def __str__(self):
         return self.name_tour

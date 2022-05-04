@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import Tour, TourGuide, Ticket, Department, Arrival, Transport, Hotel, Customer, User
+from .models import Tour, TourGuide, Ticket, Department, Arrival, Transport, Hotel, Customer, User, \
+    Category
 from django.urls import path
 from django.utils.html import mark_safe
 from django.template.response import TemplateResponse
@@ -43,6 +44,7 @@ class CategoryAdmin(admin.ModelAdmin):
 admin.site.register(User)
 admin.site.register(Tour, TourAdmin)
 admin.site.register(TourGuide)
+admin.site.register(Category)
 admin.site.register(Ticket)
 admin.site.register(Department)
 admin.site.register(Arrival)
