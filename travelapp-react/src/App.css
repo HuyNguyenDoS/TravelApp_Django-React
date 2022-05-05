@@ -1,38 +1,3 @@
-/* TOPBAR */
-#topbar {
-  background: lightcyan;
-  border-bottom: 1px solid #eee;
-  font-size: 15px;
-  height: 40px;
-  padding: 0;
-}
-#topbar .contact-info a {
-  line-height: 0;
-  color: #444;
-  transition: 0.3s;
-}
-#topbar .contact-info a:hover {
-  color: #428bca;
-}
-#topbar .contact-info i {
-  color: #428bca;
-  line-height: 0;
-  margin-right: 5px;
-}
-#topbar .contact-info .phone-icon {
-  margin-left: 15px;
-}
-#topbar .social-links a {
-  color: #5c768d;
-  padding: 4px 12px;
-  display: inline-block;
-  line-height: 1px;
-  transition: 0.3s;
-}
-#topbar .social-links a:hover {
-  color: #428bca;
-}
-
 /* NavBar */
 
 #header {
@@ -155,95 +120,6 @@
   }
 }
 
-/**
-* Mobile Navigation 
-*/
-.mobile-nav-toggle {
-  color: #1f3548;
-  font-size: 28px;
-  cursor: pointer;
-  display: none;
-  line-height: 0;
-  transition: 0.5s;
-}
-.mobile-nav-toggle.bi-x {
-  color: #fff;
-}
-
-@media (max-width: 991px) {
-  .mobile-nav-toggle {
-    display: block;
-  }
-
-  .navbar ul {
-    display: none;
-  }
-}
-.navbar-mobile {
-  position: fixed;
-  overflow: hidden;
-  top: 0;
-  right: 0;
-  left: 0;
-  bottom: 0;
-  background: rgba(31, 53, 72, 0.9);
-  transition: 0.3s;
-  z-index: 998;
-}
-.navbar-mobile .mobile-nav-toggle {
-  position: absolute;
-  top: 15px;
-  right: 15px;
-}
-.navbar-mobile ul {
-  display: block;
-  position: absolute;
-  top: 55px;
-  right: 15px;
-  bottom: 15px;
-  left: 15px;
-  padding: 10px 0;
-  background-color: #fff;
-  overflow-y: auto;
-  transition: 0.3s;
-}
-.navbar-mobile a, .navbar-mobile a:focus {
-  padding: 10px 20px;
-  font-size: 15px;
-  color: #1f3548;
-}
-.navbar-mobile a:hover, .navbar-mobile .active, .navbar-mobile li:hover > a {
-  color: #428bca;
-}
-.navbar-mobile .getstarted, .navbar-mobile .getstarted:focus {
-  margin: 15px;
-}
-.navbar-mobile .dropdown ul {
-  position: static;
-  display: none;
-  margin: 10px 20px;
-  padding: 10px 0;
-  z-index: 99;
-  opacity: 1;
-  visibility: visible;
-  background: #fff;
-  box-shadow: 0px 0px 30px rgba(127, 137, 161, 0.25);
-}
-.navbar-mobile .dropdown ul li {
-  min-width: 200px;
-}
-.navbar-mobile .dropdown ul a {
-  padding: 10px 20px;
-}
-.navbar-mobile .dropdown ul a i {
-  font-size: 12px;
-}
-.navbar-mobile .dropdown ul a:hover, .navbar-mobile .dropdown ul .active:hover, .navbar-mobile .dropdown ul li:hover > a {
-  color: #428bca;
-}
-.navbar-mobile .dropdown > .dropdown-active {
-  display: block;
-}
 
 /* BUTTON */
 .btn-get-started {
@@ -385,7 +261,13 @@ a {
         }
 
 /* Header */
-
+.avt {
+  width: 50px;
+}
+.text-primary {
+  text-transform: capitalize;
+  padding-bottom: 20px;
+}
 /* NAVBAR */
 .nav .nav-item .nav-link:hover,
 .nav .nav-item .nav-link:focus {
@@ -403,7 +285,7 @@ a {
     margin: 5px 0px;
     padding: 20px 15px;
     font-size: 14px;
-    color: #66615B;
+    color: lightcoral;
     text-transform: uppercase; }
   .navbar .navbar-toggler:focus {
     outline: none; }
@@ -585,21 +467,21 @@ a {
 .section-gray {
   background-color: #EEEEEE; }
 
-/* Body2 */
+/* Body_Info */
 #tf-testimonials{
-	background: url(../src/assets/img/hallstatt-g22b586807_1920.jpg);
-	background-size: cover;
-	background-position: center;
-	background-attachment: fixed;
-	background-repeat: no-repeat;
-	color: #ffffff;
+    background: url(../src/assets/img/hallstatt-g22b586807_1920.jpg);
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    color: #ffffff;
 }
 #tf-testimonials .overlay{
-	padding: 80px 0;
-	background-attachment: fixed;
+    padding: 80px 0;
+    background-attachment: fixed;
 }
 #testimonial {
-	padding: 30px 0;
+    padding: 30px 0;
 }
 #testimonial .item{
     display: block;
@@ -607,9 +489,9 @@ a {
     height: auto;
 }
 #testimonial .item p {
-	font-weight: 400;
-	margin: 30px 0;
-	color: #d1d1d1;
+    font-weight: 400;
+    margin: 30px 0;
+    color: #d1d1d1;
 }
 
 /*           Font Smoothing      */
@@ -633,13 +515,15 @@ h1, .h1, h2, .h2, h3, .h3, h4, .h4, h5, .h5, h6, .h6, p, .navbar, .brand, a, .td
   -moz-transition: transform 300ms cubic-bezier(0.34, 2, 0.6, 1), box-shadow 200ms ease;
   -o-transition: transform 300ms cubic-bezier(0.34, 2, 0.6, 1), box-shadow 200ms ease;
   -ms-transition: transform 300ms cubic-bezier(0.34, 2, 0.6, 1), box-shadow 200ms ease;
-  transition: transform 300ms cubic-bezier(0.34, 2, 0.6, 1), box-shadow 200ms ease; }
+  transition: transform 300ms cubic-bezier(0.34, 2, 0.6, 1), box-shadow 200ms ease; 
+}
   .card:not(.card-plain):hover {
     box-shadow: 0px 12px 19px -7px rgba(0, 0, 0, 0.3);
     transform: translateY(-10px);
     -webkit-transform: translateY(-10px);
     -ms-transform: translateY(-10px);
-    -moz-transform: translateY(-10px); }
+    -moz-transform: translateY(-10px); 
+  }
   .card.no-transition:hover, .card.page-carousel:hover, .card.card-refine:hover, .card.card-register:hover {
     box-shadow: 0 6px 10px -4px rgba(0, 0, 0, 0.15);
     transform: none;

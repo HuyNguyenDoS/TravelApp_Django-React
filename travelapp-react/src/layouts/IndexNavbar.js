@@ -1,23 +1,39 @@
 import React from "react";
+import { useState ,useEffect } from "react";
 import classnames from "classnames";
-import {NavbarBrand, Navbar, NavItem, NavLink, Container, Form, Nav } from "react-bootstrap";
+import {NavbarBrand, Navbar, NavItem, NavLink, Container,  Nav, Form, FormControl } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import cookies from "react-cookies"
 import { logoutUser } from "../ActionCreators/UserCreators";
+import Api, { endpoints } from '../configs/Apis';
+import { Button } from "bootstrap";
+import { useNavigate } from 'react-router-dom';
 
-function IndexNavbar() {
-    const [navbarColor, setNavbarColor] = React.useState("navbar-transparent");
-    const [navbarCollapse, setNavbarCollapse] = React.useState(false);
+export default function IndexNavbar() {
+    const [navbarColor, setNavbarColor] = useState("navbar-transparent");
+    const [navbarCollapse, setNavbarCollapse] = useState(false);
     const user = useSelector(state => state.user.user)
     const dispatch = useDispatch()
+    const [categories, setCategories] = useState([])
+    const [q, setQ] = useState("")
+    const navigate = useNavigate()
 
+    useEffect(() => {
+      let loadCategories = async () => {
+          let res = await Api.get(endpoints['categories'])
+
+          setCategories(res.data)
+      }
+      
+      loadCategories()
+      }, [])
 
     const toggleNavbarCollapse = () => {
       setNavbarCollapse(!navbarCollapse);
       document.documentElement.classList.toggle("nav-open");
     };
-    React.useEffect(() => {
+    useEffect(() => {
         const updateNavbarColor = () => {
           if (
             document.documentElement.scrollTop > 299 ||
@@ -38,30 +54,52 @@ function IndexNavbar() {
           window.removeEventListener("scroll", updateNavbarColor);
         };
       });
+
+      
             const logout = (event) => {
-            event.preventDefault()
+                  event.preventDefault()
 
-            cookies.remove('access_token')
-            cookies.remove('user')
-            dispatch(logoutUser())
-        }
+                  cookies.remove('access_token')
+                  cookies.remove('user')
+                  dispatch(logoutUser())
+              }
 
+            const search = (event) => {
+                event.preventDefault()
+                navigate(`/?q=${q}`)
+            }
         let path = <>
             <Link className='nav-link text-success' to='/login'>Login</Link>
             <Link className='nav-link text-success' to='/register'>Register</Link>
 
         </>
-        if (user !== null && user != undefined){ 
-            
+
+        //phan quyen user va staff
+        if (user !== null && user != undefined){
+          if(user.is_staff) 
+          {
             path = <>
-                <div className='user-img'>
-                    <Link className='img-user' to='/'>
-                        <img className='avt' src={'/static/' + user.avatar} alt='avatar'/>{user.username}
-                    </Link>
-                </div>
-                <Link className='nav-link text-success' to='#' onClick={logout}>Logout</Link>
+              <div className='user-img'>
+                  <Link className='img-user' to='/'>
+                     "nhan vien"
+                  </Link>
+              </div>
+              <Link className='nav-link text-success' to='#' onClick={logout}>Logout</Link>
             </>
-        }
+          }
+          else 
+          {
+            path = <>
+              <div className='user-img'>
+                  <Link className='img-user' to='/'>
+                      <img className='avt' src={'/static' + user.avatar} alt='avatar'/>{user.username}
+                  </Link>
+              </div>
+              <Link className='nav-link text-success' to='#' onClick={logout}>Logout</Link>
+           </>
+          }
+          
+      }
       return (
         <Navbar className={classnames("fixed-top", navbarColor)} expand="lg" >
           <Container>
@@ -72,39 +110,37 @@ function IndexNavbar() {
                 TravelTour
               </NavbarBrand>
             </div>
-
-              <NavItem >
-                  <Link className="nav-link text-success" to="/">Trang chu</Link>
-              </NavItem>
-
-              <NavItem >
-                  <NavLink
-                    href="https://demos.creative-tim.com/paper-kit-react/#/documentation?ref=pkr-index-navbar"
-                    target="_blank"
-                    className="text-success" 
-                  >
-                     Documentation
-                  </NavLink>
-                </NavItem>
-            <NavItem>
-                  <NavLink
-                    href="https://demos.creative-tim.com/paper-kit-react/#/documentation?ref=pkr-index-navbar"
-                    target="_blank"
-                    className="text-success" 
-                  >
-                    Documentation
-                  </NavLink>
-            </NavItem>
-            <NavItem > 
+            <Navbar.Toggle aria-controls="basic-navbar-nav" />
+            <Navbar.Collapse id="basic-navbar-nav">
+              <Nav className="me-auto">
+                    <Link className="nav-link text-success" to="/">Trang chủ</Link>
+                    {/* {categories.map(c => {
+                      let path = `/?category_id=${c.id}`
+                      return <Link className="nav-link text-success" to={path}>{c.name}</Link>
+                    })
+                    } */}
+                </Nav>
+              <NavItem>
                 <NavLink  >
                  {path}
                 </NavLink>
-               
-            </NavItem>
+              </NavItem>
+              
+                {/* <Form className="d-flex" onSubmit={search}>
+                    <FormControl
+                      type="search"
+                      placeholder="Nhap tu khoa..."
+                      className="mr-2"
+                      aria-label="Search"
+                      value={q}
+                      onChange={(event) => setQ(event.target.value)}
+                    />
+                    <Button type="submit" variant="outline-success">Tim</Button>
+                </Form>
+               */}
+              </Navbar.Collapse> 
           </Container>
         </Navbar>
         
       );
     }
-    
-    export default IndexNavbar;

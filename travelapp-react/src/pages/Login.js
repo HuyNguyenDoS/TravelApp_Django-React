@@ -44,6 +44,8 @@ function Login() {
         })
 
         console.info(user)
+        console.info("==========")
+
 
         cookies.save('user', user.data)
 
