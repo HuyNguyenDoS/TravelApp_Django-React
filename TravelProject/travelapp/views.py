@@ -260,7 +260,6 @@ class ArticalViewset(viewsets.ModelViewSet):
             return Response(ActionSerializer(action).data,
                             status=status.HTTP_200_OK)
 
-
     @action(methods=['get'], detail=True, url_path="comments")
     def get_comments(self, request, pk):
         tour = self.get_object()

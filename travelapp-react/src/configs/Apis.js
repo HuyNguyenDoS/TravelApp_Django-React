@@ -6,10 +6,14 @@ export let endpoints = {
     'login': '/o/token/',
     'current-user': '/users/current-user/',
     'register': '/users/',
+
+    "categories": "/categories/",
     'tours': '/tours/',
     'tour-detail': (tourId) => `/tourdetail/${tourId}/`,
+    
     'comments': (tourId) => `/tours/${tourId}/comments/`,
     'add-comment': (tourId) => `/tours/${tourId}/add-comment/`,
+    "rating": (tourId) => `/tours/${tourId}/rating/`
 }
 
 

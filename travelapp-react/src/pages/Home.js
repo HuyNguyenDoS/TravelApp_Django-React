@@ -50,9 +50,9 @@ export default function Home() {
         <>
             <IndexHeader />
             <h1 class="text-center text-danger" style={{padding:"20px"}} >DANH MỤC CHUYẾN ĐI</h1>
-            {/* <Row>
+            <Row>
                 {tours.map(c => <ETourCard obj={c} />)}
-            </Row> */}
+            </Row>
             <ButtonGroup style={{display:"flex",justifyContent:"center",width:"10%",margin:"0 auto"}}>
                 <Button variant="info"  onClick={() => paging(-1)} disabled={!prev}><GrPrevious/></Button>
                 <Button variant="info" onClick={() => paging(1)} disabled={!next}><GrNext/></Button>

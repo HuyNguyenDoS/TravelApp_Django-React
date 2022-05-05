@@ -19,15 +19,15 @@ export default function IndexNavbar() {
     const [q, setQ] = useState("")
     const navigate = useNavigate()
 
-    // useEffect(() => {
-    //   let loadCategories = async () => {
-    //       let res = await Api.get(endpoints['categories'])
+    useEffect(() => {
+      let loadCategories = async () => {
+          let res = await Api.get(endpoints['categories'])
 
-    //       setCategories(res.data)
-    //   }
+          setCategories(res.data)
+      }
       
-    //   loadCategories()
-    //   }, [])
+      loadCategories()
+      }, [])
 
     const toggleNavbarCollapse = () => {
       setNavbarCollapse(!navbarCollapse);
@@ -113,13 +113,13 @@ export default function IndexNavbar() {
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">
               <Nav className="me-auto">
-                  <Link className="nav-link text-success" to="/">Trang chủ</Link>
-                  {/* {categories.map(c => {
-                    let path = `/?category_id=${c.id}`
-                    return <Link className="nav-link text-success" to={path}>{c.name}</Link>
-                  })
-                  } */}
-              </Nav>
+                    <Link className="nav-link text-success" to="/">Trang chủ</Link>
+                    {/* {categories.map(c => {
+                      let path = `/?category_id=${c.id}`
+                      return <Link className="nav-link text-success" to={path}>{c.name}</Link>
+                    })
+                    } */}
+                </Nav>
               <NavItem>
                 <NavLink  >
                  {path}
