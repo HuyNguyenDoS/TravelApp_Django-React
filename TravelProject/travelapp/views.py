@@ -11,11 +11,11 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from django.conf import settings
 from django.views.generic import View
 from .models import User, Department, Tour, Action, TourGuide, Hotel, Arrival, Rating, Comment, \
-                    TourView, Category
+    TourView, Category, Article
 from .serializers import UserSerializer, DepartmentSeriliazer, TourSerializer, \
     ActionSerializer, RateSerializer, TourDetailSerializer, TourguideSerializer, \
     HotelSerializer, ArrivalSerializer, CommentSerializer, TourViewSerializer, \
-    CategorySerializer
+    CategorySerializer, ArticalSerializer
 
 
 class UserViewSet(viewsets.ViewSet, generics.CreateAPIView):
@@ -39,29 +39,27 @@ class AuthInfo(APIView):
     def get(self, request):
         return Response(settings.OAUTH2_INFO, status=status.HTTP_200_OK)
 
+
 class CategoryViewSet(viewsets.ViewSet, generics.ListAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
 
-class DepartmentViewSet(viewsets.ViewSet, generics.CreateAPIView):
-    queryset = Department.objects.all()
+
+class DepartmentViewSet(viewsets.ViewSet, generics.ListAPIView,
+                        generics.CreateAPIView, generics.RetrieveAPIView,
+                        generics.UpdateAPIView, generics.DestroyAPIView):
+    queryset = Department.objects.filter(active=True)
     serializer_class = DepartmentSeriliazer
 
+    # tim kiem chinh xac theo name_department
     def get_queryset(self):
         query = self.queryset
 
         kw = self.request.query_params.get('kw')
         if kw:
-            query = query.filter(name__icontains=kw)
+            query = query.filter(name_department__icontains=kw)
 
         return query
-
-    @action(methods=['get'], detail=False, url_path="get_department")
-    def get_department(self, request, pk):
-        department = self.get_object().department
-
-        return Response(data=DepartmentSeriliazer(many=True, context={'requets': request}).data,
-                        status=status.HTTP_200_OK)
 
 
 class TourguideViewSet(viewsets.ViewSet, generics.RetrieveAPIView):
@@ -106,7 +104,7 @@ class ArrivalViewSet(viewsets.ViewSet, generics.RetrieveAPIView):
         return query
 
 
-class TourViewSet(viewsets.ViewSet, generics.ListAPIView):
+class TourViewSet(viewsets.ViewSet, generics.ListAPIView, generics.DestroyAPIView, generics.UpdateAPIView):
     queryset = Tour.objects.filter(active=True)
     serializer_class = TourDetailSerializer
     pagination_class = BasePaginator
@@ -211,6 +209,64 @@ class CommentViewSet(viewsets.ViewSet, generics.DestroyAPIView,
 
         return Response(status=status.HTTP_403_FORBIDDEN)
 
+
+# Viewset cho bai viet
+# class ArticalViewset(viewsets.ViewSet, generics.ListAPIView, generics.RetrieveAPIView,
+#                      generics.UpdateAPIView, generics.DestroyAPIView, generics.CreateAPIView):
+class ArticalViewset(viewsets.ModelViewSet):
+    queryset = Article.objects.all()
+    serializer_class = ArticalSerializer
+
+    # tim kiem theo topic bai viet
+    def get_queryset(self):
+        query = self.queryset
+
+        kw = self.request.query_params.get('kw')
+        if kw:
+            query = query.filter(topic__icontains=kw)
+
+        return query
+
+    def get_permissions(self):
+        if self.action in ['add_comment', 'take_action', 'rate']:
+            return [permissions.IsAuthenticated()]
+
+        return [permissions.AllowAny()]
+
+    @action(methods=['post'], detail=True, url_path="add-comment")
+    def add_comment(self, request, pk):
+        content = request.data.get('content')
+        if content:
+            c = Comment.objects.create(content=content,
+                                       tour=self.get_object(),
+                                       creator=request.user)
+
+            return Response(CommentSerializer(c, context={"request": request}).data,
+                            status=status.HTTP_201_CREATED)
+
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    @action(methods=['post'], detail=True, url_path='like')
+    def take_action(self, request, pk):
+        try:
+            action_type = int(request.data['type'])
+        except IndexError | ValueError:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        else:
+            action = Action.objects.create(type=action_type,
+                                           creator=request.user,
+                                           tour=self.get_object())
+
+            return Response(ActionSerializer(action).data,
+                            status=status.HTTP_200_OK)
+
+
+    @action(methods=['get'], detail=True, url_path="comments")
+    def get_comments(self, request, pk):
+        tour = self.get_object()
+        comments = tour.comments.select_related('creator').filter(active=True)
+        return Response(CommentSerializer(comments, many=True).data,
+                        status=status.HTTP_200_OK)
 
 # login facebook
 # class PostList(generics.ListAPIView):

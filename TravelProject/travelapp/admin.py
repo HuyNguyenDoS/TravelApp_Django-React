@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import Tour, TourGuide, Ticket, Department, Arrival, Transport, Hotel, Customer, User, \
-    Category
+    Category, Article
 from django.urls import path
 from django.utils.html import mark_safe
 from django.template.response import TemplateResponse
@@ -51,3 +51,4 @@ admin.site.register(Arrival)
 admin.site.register(Transport)
 admin.site.register(Hotel)
 admin.site.register(Customer)
+admin.site.register(Article)

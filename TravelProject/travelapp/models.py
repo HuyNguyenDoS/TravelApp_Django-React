@@ -9,22 +9,6 @@ class User(AbstractUser):
     avatar = models.ImageField(null=True, upload_to='users/%Y/%m')
 
 
-#login bằng email
-# class User(AbstractUser):
-#     # Delete not use field
-#     username = None
-#     last_login = None
-#     is_staff = None
-#     is_superuser = None
-#
-#     password = models.CharField(max_length=100)
-#     email = models.EmailField(max_length=100, unique=True)
-#     USERNAME_FIELD = 'email'
-#     REQUIRED_FIELDS = []
-#
-#     def __str__(self):
-#         return self.email
-#
 def upload_to(instance, filename):
     return 'posts/{filename}'.format(filename=filename)
 
@@ -34,38 +18,6 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
-#
-#
-# class Post(models.Model):
-#     class PostObjects(models.Manager):
-#         def get_queryset(self):
-#             return super().get_queryset().filter(status='published')
-#
-#     options = (
-#         ('draft', 'Draft'),
-#         ('published', 'Published'),
-#     )
-#
-#     category = models.ForeignKey(
-#         Category, on_delete=models.PROTECT, default=1)
-#     title = models.CharField(max_length=250)
-#     image = models.ImageField("Image", upload_to=upload_to, default='posts/default.jpg')
-#     excerpt = models.TextField(null=True)
-#     content = models.TextField()
-#     slug = models.SlugField(max_length=250, unique_for_date='published')
-#     published = models.DateTimeField(default=datetime.timezone)
-#     author = models.ForeignKey(
-#         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='blog_posts')
-#     status = models.CharField(
-#         max_length=10, choices=options, default='published')
-#     objects = models.Manager()  # default manager
-#     postobjects = PostObjects()  # custom manager
-#
-#     class Meta:
-#         ordering = ('-published',)
-#
-#     def __str__(self):
-#         return self.title
 
 
 # db management
@@ -164,6 +116,7 @@ class Arrival(ModelBase):
     def __str__(self):
         return self.name_arrival
 
+
 class ActionBase(models.Model):
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
@@ -173,11 +126,13 @@ class ActionBase(models.Model):
     class Meta:
         abstract = True
 
+
 # action, like, rating, view
 
 class TourView(ModelBase):
     views = models.IntegerField(default=0)
     tour = models.OneToOneField(Tour, on_delete=models.CASCADE)
+
 
 class Rating(ActionBase):
     one_star, two_star, three_star, four_star, five_star = range(5)
@@ -190,6 +145,7 @@ class Rating(ActionBase):
     ]
     typr = models.PositiveSmallIntegerField(choices=ACTIONS, default=five_star)
 
+
 class Action(ActionBase):
     LIKE, NOT_LIKE = range(2)
     ACTIONS = [
@@ -197,6 +153,7 @@ class Action(ActionBase):
         (NOT_LIKE, 'Not like'),
     ]
     type = models.PositiveSmallIntegerField(choices=ACTIONS, default=LIKE)
+
 
 class Comment(ModelBase):
     content = models.TextField()
@@ -206,4 +163,60 @@ class Comment(ModelBase):
     def __str__(self):
         return self.content
 
+# table bai viet, tin tuc
+class Article(ModelBase):
+    topic = models.TextField()
+    content = RichTextField()
+    image_Artical = models.ImageField(null=True, upload_to='imageArtical/%Y/%m')
 
+    def __str__(self):
+        return self.topic
+
+# login bằng email
+# class User(AbstractUser):
+#     # Delete not use field
+#     username = None
+#     last_login = None
+#     is_staff = None
+#     is_superuser = None
+#
+#     password = models.CharField(max_length=100)
+#     email = models.EmailField(max_length=100, unique=True)
+#     USERNAME_FIELD = 'email'
+#     REQUIRED_FIELDS = []
+#
+#     def __str__(self):
+#         return self.email
+#
+#
+#
+# class Post(models.Model):
+#     class PostObjects(models.Manager):
+#         def get_queryset(self):
+#             return super().get_queryset().filter(status='published')
+#
+#     options = (
+#         ('draft', 'Draft'),
+#         ('published', 'Published'),
+#     )
+#
+#     category = models.ForeignKey(
+#         Category, on_delete=models.PROTECT, default=1)
+#     title = models.CharField(max_length=250)
+#     image = models.ImageField("Image", upload_to=upload_to, default='posts/default.jpg')
+#     excerpt = models.TextField(null=True)
+#     content = models.TextField()
+#     slug = models.SlugField(max_length=250, unique_for_date='published')
+#     published = models.DateTimeField(default=datetime.timezone)
+#     author = models.ForeignKey(
+#         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='blog_posts')
+#     status = models.CharField(
+#         max_length=10, choices=options, default='published')
+#     objects = models.Manager()  # default manager
+#     postobjects = PostObjects()  # custom manager
+#
+#     class Meta:
+#         ordering = ('-published',)
+#
+#     def __str__(self):
+#         return self.title
