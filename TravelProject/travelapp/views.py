@@ -6,7 +6,6 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, FormParser
-from django.conf import settings
 from django.views.generic import View
 from .paginators import BasePaginator
 from .models import User, Rating, Comment, Tour, Category, TourView,Action\
@@ -14,10 +13,11 @@ from .models import User, Rating, Comment, Tour, Category, TourView,Action\
 from .serializers import UserSerializer, CategorySerializer, TourSerializer, CommentSerializer, ActionSerializer, \
     TourDetailSerializer, TourViewSerializer, RatingSerializer, TourguideSerializer,\
     HotelSerializer, ArrivalSerializer , DepartmentSeriliazer,ArticalSerializer
+
 from .perms import CommentOwnerPerms
 from django.db.models import F
 from django.http import Http404
-
+from django.conf import settings
 
 class UserViewSet(viewsets.ViewSet, generics.CreateAPIView):
     queryset = User.objects.filter(is_active=True)
@@ -214,7 +214,6 @@ class TourViewSet(viewsets.ViewSet,generics.ListAPIView):
 class TourDetailViewSet(viewsets.ViewSet, generics.RetrieveAPIView):
     queryset = Tour.objects.filter(active=True)
     serializer_class = TourDetailSerializer
-
 
 class CommentViewSet(viewsets.ViewSet, generics.DestroyAPIView,
                      generics.UpdateAPIView):

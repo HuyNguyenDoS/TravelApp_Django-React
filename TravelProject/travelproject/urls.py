@@ -37,6 +37,7 @@ schema_view = get_schema_view(
 
 urlpatterns = [
     path('', include('travelapp.urls')),
+    path('o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
     path('admin/', admin.site.urls),
     re_path(r'^ckeditor/', include('ckeditor_uploader.urls')),
     re_path(r'^swagger(?P<format>\.json|\.yaml)$',
@@ -49,7 +50,6 @@ urlpatterns = [
             schema_view.with_ui('redoc', cache_timeout=0),
             name='schema-redoc'),
     path('__debug__/', include(debug_toolbar.urls)),
-    path('o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
     path('', TemplateView.as_view(template_name='index.html')),
     # login facebook
     re_path(r'^auth/', include('drf_social_oauth2.urls', namespace='drf')),

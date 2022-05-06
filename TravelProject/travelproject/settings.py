@@ -110,11 +110,12 @@ ROOT_URLCONF = 'travelproject.urls'
 OAUTH2_INFO = {
     "client_id": 'qclzHU1M5GKTcz9yeOMpl6KefLJgtJotHyN1kQPQ',
     "client_secret": 'hriqw6VW9UADs1FYHPB1w7vT7C1r3uLnx7l7CoO5e5k9toiwdZW1ghYorOjOaLzn09dDgmV2C9ertfrFyWYBae3SqFf2p66PujjYfBhIlNLCukyufRvRuuxhWkxBWmLg'
+
 }
 
-OAUTH2_PROVIDER = {
-    'OAUTH2_BACKEND_CLASS': 'oauth2_provider.oauth2_backends.JSONOAuthLibCore'
-}
+# OAUTH2_PROVIDER = {
+#     'OAUTH2_BACKEND_CLASS': 'oauth2_provider.oauth2_backends.JSONOAuthLibCore'
+# }
 
 TEMPLATES = [
     {

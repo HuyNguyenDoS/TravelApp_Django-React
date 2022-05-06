@@ -85,14 +85,9 @@ class Tour(ModelBase):
         return self.name_tour
 
 
-# class UserTourView(models.Model):
-#     user = models.ForeignKey(User, on_delete=models.CASCADE)
-#     tour = models.ForeignKey(Tour, on_delete=models.CASCADE)
-#     reading_date = models.DateTimeField(auto_now=True)
-#
-#     class Meta:
-#         unique_together = ('user', 'tour')
 
+class Ticket(ModelBase):
+    name_ticket = models.TextField()
 
 class Ticket(ModelBase):
     name_ticket = models.TextField()
@@ -112,7 +107,6 @@ class Customer(ModelBase):
 
     def __str__(self):
         return self.name_customer
-
 
 class Hotel(ModelBase):
     name_hotel = models.TextField()
