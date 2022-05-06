@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Tour, TourGuide, Ticket, Department, Arrival, Transport, Hotel, Customer, User,Category
+from .models import Tour, TourGuide, Ticket, Department, Arrival, Transport, Hotel, Customer, User,Category,Article
 from django.urls import path
 from django.utils.html import mark_safe
 from django.template.response import TemplateResponse
@@ -17,8 +17,10 @@ class TourForm(forms.ModelForm):
 class TourAdmin(admin.ModelAdmin):
     list_display = ("id", "name_tour", "active")
 
+
 class TourGuideAdmin(admin.ModelAdmin):
     readonly_fields = ['imageTourGuide']
+
 
 class TravelappAdmin(admin.ModelAdmin):
     search_fields = ['subject', 'category']
@@ -30,9 +32,6 @@ class TravelappAdmin(admin.ModelAdmin):
                 '<img src="/static/{url}" width="120" />' \
                     .format(url=course.image.name)
             )
-
-
-
 
 class CategoryAdmin(admin.ModelAdmin):
     search_fields = ['name']
@@ -50,3 +49,5 @@ admin.site.register(Arrival)
 admin.site.register(Transport)
 admin.site.register(Hotel)
 admin.site.register(Customer)
+admin.site.register(Article)
+

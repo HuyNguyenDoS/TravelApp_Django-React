@@ -11,7 +11,13 @@ export let endpoints = {
     'tour-detail': (tourId) => `/tours/${tourId}/`,
     'comments': (tourId) => `/tours/${tourId}/comments/`,
     'add-comment': (tourId) => `/tours/${tourId}/add-comment/`,
-    "rating": (tourId) => `/tours/${tourId}/rating/`
+    'rating': (tourId) => `/tours/${tourId}/rating/`,
+    'like': (tourId) => `/tours/${tourId}/like/`,
+    'views': (tourId) => `/tours/${tourId}/views/`,
+    'articals': '/articals/',
+    'artical-detail': (articalId) => `/articals/${articalId}/`,
+    'comments': (articalId) => `/articals/${articalId}/comments/`,
+    'add-comment': (articalId) => `/articals/${articalId}/add-comment/`,
 }
 
 

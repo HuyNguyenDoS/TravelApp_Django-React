@@ -21,6 +21,7 @@ export default function IndexNavbar() {
     const [q, setQ] = useState("")
     const navigate = useNavigate()
 
+    //load category
     useEffect(() => {
       let loadCategories = async () => {
           let res = await Api.get(endpoints['categories'])
@@ -30,11 +31,12 @@ export default function IndexNavbar() {
       
       loadCategories()
       }, [])
-
+    //Scroll của navbar
     const toggleNavbarCollapse = () => {
       setNavbarCollapse(!navbarCollapse);
       document.documentElement.classList.toggle("nav-open");
     };
+
     useEffect(() => {
         const updateNavbarColor = () => {
           if (
@@ -86,6 +88,7 @@ export default function IndexNavbar() {
               <Link className='nav-link text-success' to='#' onClick={logout}>Logout</Link>
           </>
       }
+      //scroll To top của Trang chủ
         const [showTopBtn, setShowTopBtn] = useState(false);
         useEffect(() => {
           window.addEventListener('scroll', () => {

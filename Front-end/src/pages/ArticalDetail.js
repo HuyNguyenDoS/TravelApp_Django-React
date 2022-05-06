@@ -10,29 +10,28 @@ import IndexNavbar from '../layouts/IndexNavbar';
 import IndexHeader from '../layouts/IndexHeader';
 import Rating from "react-rating"
 
-
-export default function TourDetail() {
-    const [tour, setTour] = useState(null)
-    let { tourId } = useParams()
+//Xu
+export default function ArticalDetail() {
+    const [artical, setArtical] = useState(null)
+    let { articalId } = useParams()
     const [comments, setComments] = useState([])
     const [commentContent, setCommentContent] = useState(null)
-    const [rating, setRating] = useState(0)
     const [changed, setChanged] = useState(1)
     let user = useSelector(state => state.user.user)
     
 
     useEffect(() => {
-      let loadTourDetail = async () => {
+      let loadArticalDetail = async () => {
         try {
-            let res = await Apis.get(endpoints["tour-detail"](tourId),
-            //  {
+            let res = await Apis.get(endpoints["artical-detail"](articalId), 
+            // {
             //     headers: {
             //         "Authorization": `Bearer ${cookies.load("access_token")}`
             //     }
             // }
             )
-            setTour(res.data)
-            setRating(res.data.rate)
+            setArtical(res.data)
+            console.info(res.data)
         } catch (err) {
             console.error(err)
         }
@@ -40,7 +39,7 @@ export default function TourDetail() {
 
       let loadComments = async () => {
             try {
-                let res = await Apis.get(endpoints['comments'](tourId))
+                let res = await Apis.get(endpoints['comments'](articalId))
                 setComments(res.data)
             } catch (err) {
                 console.error(err)
@@ -48,7 +47,7 @@ export default function TourDetail() {
         }
         
       loadComments()
-      loadTourDetail()
+      loadArticalDetail()
       
     }, [changed])
 
@@ -57,7 +56,7 @@ export default function TourDetail() {
       event.preventDefault()
 
       try {
-          let res = await Apis.post(endpoints['add-comment'](tourId), {
+          let res = await Apis.post(endpoints['add-comment'](articalId), {
               "content": commentContent
           }, {
               headers: {
@@ -76,30 +75,11 @@ export default function TourDetail() {
 
   }
 
-    const saveRating = async (rate) => {
-      if (window.confirm("Ban muon danh gia bai hoc nay?") == true) {
-          try {
-              let res = await Apis.post(endpoints['rating'](tourId), {
-                  'rating': rate
-              }, {
-                  headers: {
-                      "Authorization": `Bearer ${cookies.load("access_token")}`
-                  }
-              })
-              console.info(res.data)
-          } catch (err) {
-              console.error(err)
-          }
-      }
-  }
 
-  
-
-  if (tour === null)
+  if (artical === null)
     return <Spinner animation='border'/>
   
     let comment = <em><Link to='/login'> Đăng nhập </Link> để hình luận </em>
-    let r = ""
     if (user !== null && user !== undefined) {
       comment =  <Form onSubmit={addComment} >
                     <Form.Group className="mb-3" controlId="comentContent">
@@ -111,38 +91,25 @@ export default function TourDetail() {
                     </Form.Group>
                     <button type='submit'variant="info">Thêm bình luận</button>
                 </Form>
-    r = <Rating  
-        emptySymbol={<img src={require("../assets/img/star-empty.png")} className="icon" />}
-        fullSymbol={<img src={require("../assets/img/star-yellow.png")} className="icon" />} 
-        initialRating={rating} onClick={saveRating} 
-      />
   }
 
   return (
     <>
       <IndexNavbar/>
       <IndexHeader/>
-      <h1 className='text-success'>TourDetail</h1>
+      <h1 className='text-success'>ArticalDetail</h1>
       <Row>
             <Col md={4} xs={12}>
-              <Image src={tour.imageTour} style={{width:'500px', height: '557px'}} rounded fluid />
+              <Image src={artical.image_Artical} style={{width:'500px', height: '557px'}} rounded fluid />
             </Col>
             <Col md={8} xs={12}>
-              <h2>{tour.name_tour}</h2>
-              <p>Ngày tạo: {tour.created_date}</p>
-              <p>Ngày cập nhật: {tour.updated_date}</p>
-              {/* <p>
-                  {tour.tags.map(t => <Badge bg='secondary'>{t.name}</Badge>)}
-              </p> */}
-              <p>
-                {r}
-              </p>
+              <h2>{artical.topic}</h2>
+              <p>Ngày tạo: {artical.created_date}</p>
+              <p>Ngày cập nhật: {artical.updated_date}</p>
+              <p>{artical.content}</p>
             </Col>
         </Row>
         <hr />
-        {/* <div>
-           {arrival.content}
-        </div> */}
         {comment}
         <hr />
         {comments.map(c => <Row>

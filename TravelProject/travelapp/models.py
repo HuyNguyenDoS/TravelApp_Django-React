@@ -80,12 +80,14 @@ class Tour(ModelBase):
     arrivals = models.ManyToManyField('Arrival')
 
     category = models.ForeignKey(Category, related_name='tours', null=True, on_delete=models.SET_NULL)
-    tags = models.ManyToManyField('Tag', related_name='tours', blank=True, null=True )
 
     def __str__(self):
         return self.name_tour
 
 
+
+class Ticket(ModelBase):
+    name_ticket = models.TextField()
 
 class Ticket(ModelBase):
     name_ticket = models.TextField()
@@ -105,7 +107,6 @@ class Customer(ModelBase):
 
     def __str__(self):
         return self.name_customer
-
 
 class Hotel(ModelBase):
     name_hotel = models.TextField()
@@ -133,10 +134,6 @@ class Arrival(ModelBase):
         return self.name_arrival
 
 
-class Tag(models.Model):
-    name = models.CharField(max_length=50, unique=True)
-
-
 class ActionBase(models.Model):
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
@@ -145,7 +142,6 @@ class ActionBase(models.Model):
 
     class Meta:
         abstract = True
-        unique_together = ("tour", "creator")
 
 
 class TourView(ModelBase):
@@ -168,12 +164,23 @@ class Rating(ActionBase):
     rate = models.PositiveSmallIntegerField(default=0)
 
 
+class Article(ModelBase):
+    topic = models.TextField()
+    content = models.TextField()
+    image_Artical = models.ImageField(null=True, upload_to='imageArtical/%Y/%m')
+
+    def __str__(self):
+        return self.topic
+
+
 class Comment(ModelBase):
     content = models.TextField()
-    tour = models.ForeignKey(Tour, related_name='comments', on_delete=models.CASCADE)
+    tour = models.ForeignKey(Tour, related_name='comments', on_delete=models.CASCADE,null=True)
+    artical = models.ForeignKey(Article, related_name='comments', on_delete=models.CASCADE,default="0",null=True)
     creator = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.content
+
 
 

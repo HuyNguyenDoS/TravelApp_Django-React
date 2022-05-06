@@ -108,8 +108,9 @@ INTERNAL_IPS = [
 ROOT_URLCONF = 'travelproject.urls'
 
 OAUTH2_INFO = {
-    "client_id": 'bpqanXaggAPGa40XuFaJyyxM7QdLabXt9AjCIwef',
-    "client_secret": 'pbkdf2_sha256$320000$AT87WtPM15I0jkziJFVl7R$Uc4tZLfB/wQum3+H6drZGBoFFzSUuyL4+uIj1MWS9PA='
+    "client_id": 'qclzHU1M5GKTcz9yeOMpl6KefLJgtJotHyN1kQPQ',
+    "client_secret": 'hriqw6VW9UADs1FYHPB1w7vT7C1r3uLnx7l7CoO5e5k9toiwdZW1ghYorOjOaLzn09dDgmV2C9ertfrFyWYBae3SqFf2p66PujjYfBhIlNLCukyufRvRuuxhWkxBWmLg'
+
 }
 
 # OAUTH2_PROVIDER = {

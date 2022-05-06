@@ -12,6 +12,8 @@ router.register(prefix='tourguides', viewset=views.TourguideViewSet, basename='t
 router.register(prefix='hotels', viewset=views.HotelViewSet, basename='hotel')
 router.register(prefix='arrivals', viewset=views.ArrivalViewSet, basename='arrival')
 
+#bai viet
+router.register(prefix='articals', viewset=views.ArticalViewset, basename='artical')
 
 urlpatterns = [
     path('', include(router.urls)),

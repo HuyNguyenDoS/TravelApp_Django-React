@@ -9,6 +9,7 @@ import IndexNavbar from '../layouts/IndexNavbar';
 import Footer from '../layouts/Footer';
 import Tour from '../pages/Tour';
 import TourDetail from '../pages/TourDetail';
+import ArticalDetail from '../pages/ArticalDetail';
 
 export default function Body() {
     return (
@@ -19,6 +20,7 @@ export default function Body() {
                     <Route path ='/' element ={<Home />} /> 
                     <Route  path ='/login' element ={<Login />} />
                     <Route  path ='/tours/:tourId/' element ={<TourDetail />} />
+                    <Route  path ='/articals/:articalId/' element ={<ArticalDetail />} />
                     <Route  path ='/register' element ={<Register />} />
                 </Routes> 
                 <Footer />

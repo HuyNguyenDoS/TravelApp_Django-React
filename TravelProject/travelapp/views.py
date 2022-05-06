@@ -8,11 +8,12 @@ from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, FormParser
 from django.views.generic import View
 from .paginators import BasePaginator
-from .models import User, Rating, Comment, Tour, Category, TourView,Action,Tag\
-    , Department, TourGuide, Hotel, Arrival
+from .models import User, Rating, Comment, Tour, Category, TourView,Action\
+    , Department, TourGuide, Hotel, Arrival,Article
 from .serializers import UserSerializer, CategorySerializer, TourSerializer, CommentSerializer, ActionSerializer, \
     TourDetailSerializer, TourViewSerializer, RatingSerializer, TourguideSerializer,\
-    HotelSerializer, ArrivalSerializer , DepartmentSeriliazer
+    HotelSerializer, ArrivalSerializer , DepartmentSeriliazer,ArticalSerializer
+
 from .perms import CommentOwnerPerms
 from django.db.models import F
 from django.http import Http404
@@ -113,6 +114,7 @@ class TourViewSet(viewsets.ViewSet,generics.ListAPIView):
     serializer_class = TourDetailSerializer
     pagination_class = BasePaginator
 
+    #show tour details
     def retrieve(self, request, pk):
         try:
             tour = Tour.objects.get(pk=pk)
@@ -135,31 +137,17 @@ class TourViewSet(viewsets.ViewSet,generics.ListAPIView):
 
         return tours
 
+    @swagger_auto_schema(
+        operation_description='Get the comments of a tour',
+        responses={
+            status.HTTP_200_OK: CommentSerializer()
+        }
+    )
     def get_permissions(self):
         if self.action in ['add_comment', 'take_action', 'rate']:
             return [permissions.IsAuthenticated()]
 
         return [permissions.AllowAny()]
-
-    @action(methods=['post'], detail=True, url_path="tags")
-    def add_tag(self, request, pk):
-        try:
-            tour = self.get_object()
-        except Http404:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-        else:
-            tags = request.data.get("tags")
-            if tags is not None:
-                for tag in tags:
-                    t, _ = Tag.objects.get_or_create(name=tag)
-                    tour.tags.add(t)
-
-                tour.save()
-
-                return Response(self.serializer_class(tour).data,
-                                status=status.HTTP_201_CREATED)
-
-        return Response(status=status.HTTP_404_NOT_FOUND)
 
     @action(methods=['post'], detail=True, url_path="add-comment")
     def add_comment(self, request, pk):
@@ -202,6 +190,7 @@ class TourViewSet(viewsets.ViewSet,generics.ListAPIView):
             return Response(RatingSerializer(r).data,
                             status=status.HTTP_200_OK)
 
+
     @action(methods=['get'], detail=True, url_path='views')
     def inc_view(self, request, pk):
         v, created = TourView.objects.get_or_create(tour=self.get_object())
@@ -213,37 +202,18 @@ class TourViewSet(viewsets.ViewSet,generics.ListAPIView):
 
         return Response(TourViewSerializer(v).data, status=status.HTTP_200_OK)
 
-    @action(methods=['get'], detail=True, url_path="comments")
+    @action(methods=['get'], url_path='comments', detail=True)
     def get_comments(self, request, pk):
-        l = self.get_object()
-        return Response(
-            CommentSerializer(l.comment_set.order_by("-id").all(), many=True, context={"request": self.request}).data,
-            status=status.HTTP_200_OK)
+        tour = self.get_object()
+        comments = tour.comments.select_related('creator').filter(active=True)
+
+        return Response(CommentSerializer(comments, many=True).data,
+                        status=status.HTTP_200_OK)
 
 
 class TourDetailViewSet(viewsets.ViewSet, generics.RetrieveAPIView):
     queryset = Tour.objects.filter(active=True)
     serializer_class = TourDetailSerializer
-
-    @action(methods=['post'], detail=True, url_path='tags')
-    def add_tag(self, request, pk):
-        try:
-            post = self.get_object()
-        except Http404:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-        else:
-            tags = request.data.get('tags')
-            if tags is not None:
-                for tag in tags:
-                    t, _ = Tag.objects.get_or_create(name=tag)
-                    post.tags.add(t)
-
-                post.save()
-
-                return Response(self.serializer_class(post).data,
-                                status=status.HTTP_201_CREATED)
-
-        return Response(status=status.HTTP_404_NOT_FOUND)
 
 class CommentViewSet(viewsets.ViewSet, generics.DestroyAPIView,
                      generics.UpdateAPIView):
@@ -264,6 +234,63 @@ class CommentViewSet(viewsets.ViewSet, generics.DestroyAPIView,
         return Response(status=status.HTTP_403_FORBIDDEN)
 
 
+# Viewset cho bai viet
+# class ArticalViewset(viewsets.ViewSet, generics.ListAPIView, generics.RetrieveAPIView,
+#                      generics.UpdateAPIView, generics.DestroyAPIView, generics.CreateAPIView):
+class ArticalViewset(viewsets.ModelViewSet):
+    queryset = Article.objects.all()
+    serializer_class = ArticalSerializer
+    pagination_class = BasePaginator
+
+    # tim kiem theo topic bai viet
+    def get_queryset(self):
+        query = self.queryset
+
+        kw = self.request.query_params.get('kw')
+        if kw:
+            query = query.filter(topic__icontains=kw)
+
+        return query
+
+    def get_permissions(self):
+        if self.action in ['add_comment', 'take_action', 'rate']:
+            return [permissions.IsAuthenticated()]
+
+        return [permissions.AllowAny()]
+
+    @action(methods=['post'], detail=True, url_path="add-comment")
+    def add_comment(self, request, pk):
+        content = request.data.get('content')
+        if content:
+            c = Comment.objects.create(content=content,
+                                       artical=self.get_object(),
+                                       creator=request.user)
+
+            return Response(CommentSerializer(c, context={"request": request}).data,
+                            status=status.HTTP_201_CREATED)
+
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    @action(methods=['post'], detail=True, url_path='like')
+    def take_action(self, request, pk):
+        try:
+            action_type = int(request.data['type'])
+        except IndexError | ValueError:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        else:
+            action = Action.objects.create(type=action_type,
+                                           creator=request.user,
+                                           artical=self.get_object())
+
+            return Response(ActionSerializer(action).data,
+                            status=status.HTTP_200_OK)
+
+    @action(methods=['get'], detail=True, url_path="comments")
+    def get_comments(self, request, pk):
+        artical = self.get_object()
+        comments = artical.comments.select_related('creator').filter(active=True)
+        return Response(CommentSerializer(comments, many=True).data,
+                        status=status.HTTP_200_OK)
 #login facebook
 # class PostList(generics.ListAPIView):
 #
