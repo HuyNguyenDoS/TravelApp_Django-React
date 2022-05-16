@@ -9,7 +9,6 @@ import Services from '../layouts/Services';
 import Footer from '../layouts/Footer';
 import ScrollToTop from '../layouts/ScrollToTop';
 import Body_Info from '../layouts/Body_Info';
-import Tour from '../pages/Tour';
 import ETourCard from '../layouts/ETourCard';
 import {GrNext,GrPrevious} from "react-icons/gr"
 import EArtical from '../layouts/EArtical';
@@ -69,7 +68,7 @@ export default function Home() {
         setPage(page + inc)
     }
 
-
+    
     return (
         <>
             <IndexNavbar/>

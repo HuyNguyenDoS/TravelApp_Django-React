@@ -3,7 +3,7 @@ import React, { useRef , useState} from 'react';
 import { Form , Button} from "react-bootstrap";
 import Apis, { endpoints } from '../configs/Apis';
 import { useNavigate } from 'react-router-dom';
-
+import IndexNavbar from '../layouts/IndexNavbar';
 
 
 
@@ -53,7 +53,8 @@ export default function Register() {
 
     return (
       <>
-      <h1 className="text-center text-success">DANG KY NGUOI DUNG</h1>
+       <IndexNavbar/>
+      <h1 className="text-center text-success" style={{marginTop:'120px'}}>ĐĂNG KÍ NGƯỜI DÙNG</h1>
       <Form onSubmit={register}>
           <RegisterForm id="firstName" label="First Name" 
                         type="text" value={firstName}

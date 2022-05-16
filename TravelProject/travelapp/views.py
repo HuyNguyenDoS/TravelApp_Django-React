@@ -109,20 +109,10 @@ class ArrivalViewSet(viewsets.ViewSet, generics.CreateAPIView):
         return query
 
 
-class TourViewSet(viewsets.ViewSet,generics.ListAPIView):
+class TourViewSet(viewsets.ModelViewSet):
     queryset = Tour.objects.filter(active=True)
     serializer_class = TourDetailSerializer
     pagination_class = BasePaginator
-
-    #show tour details
-    def retrieve(self, request, pk):
-        try:
-            tour = Tour.objects.get(pk=pk)
-
-        except Tour.DoesNotExist:
-            return Http404()
-
-        return Response(TourDetailSerializer(tour).data)
 
     def get_queryset(self):
         tours = Tour.objects.filter(active=True)

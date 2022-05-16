@@ -5,6 +5,7 @@ import {GiMoneyStack} from "react-icons/gi"
 import { Link } from 'react-router-dom'
 export default function ETourCard(props) {
     let path = `/tours/${props.obj.id}/`
+    let path2 = `/tours/${props.obj.id}/bookticket`
   return (
       //Cho hiện danh sách tour
       <Col md={4} xs={12}>
@@ -12,7 +13,6 @@ export default function ETourCard(props) {
             <Link to={path}>
                <img src={props.obj.imageTour} variant="top"  style={{width:'auto', height: '300px'}} />
             </Link> 
-            {/* <Card.Img style={{width:'auto', height: '300px'}}  variant="top" src={props.obj.image} /> */}
             <Card.Body>
                 <Card.Title className='text-primary'>{props.obj.name_tour}</Card.Title>
                 <Card.Text>
@@ -21,6 +21,8 @@ export default function ETourCard(props) {
                 <Card.Text>
                 <GiMoneyStack/> {props.obj.price} vnd
                 </Card.Text>
+                <Link to={path2}> Đặt vé
+              </Link>
             </Card.Body>
           </Card>
       </Col>

@@ -43,7 +43,7 @@ class CategoryAdmin(admin.ModelAdmin):
 
 admin.site.register(User)
 admin.site.register(Category)
-admin.site.register(Tour, TourAdmin)
+admin.site.register(Tour)
 admin.site.register(TourGuide)
 admin.site.register(Ticket)
 admin.site.register(Department)

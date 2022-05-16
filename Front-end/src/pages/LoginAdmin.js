@@ -9,7 +9,7 @@ import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { loginUser } from '../ActionCreators/UserCreators';
 import cookies from 'react-cookies';
-
+import IndexNavbar from '../layouts/IndexNavbar';
 
 
 function LoginAdmin() {
@@ -54,7 +54,8 @@ function LoginAdmin() {
 
   return (
     <>
-       <Row xs={{ cols: 1 }} md={{ cols: 2 }} className="g-4">
+         <IndexNavbar/>
+       <Row xs={{ cols: 1 }} md={{ cols: 1 }} className="g-4">
                 <Col xs>
                 <Form onSubmit={login} style={{marginTop:'200px'}}  >
                     <h1 className="text-center text-danger">ĐĂNG NHẬP ADMIN</h1>
@@ -74,18 +75,11 @@ function LoginAdmin() {
                                     onChange={(event) => setPassword(event.target.value)} />
                     </Form.Group>
                   
-                    <Button variant="primary" type="submit">
+                    <Button variant="primary" type="submit" style={{marginLeft:'700px',padding:'15px',textAlign:'center'
+                    ,borderRadius:'20px',border:'2px' ,backgroundColor:'blue',color:'white'}}>
                       Đăng nhập
                     </Button>
                   </Form>
-                </Col>
-                <Col xs style={{marginTop:'200px'}}>
-                    <h1 >ádasd</h1>
-                    <h1 >ádafdsffffffffffsd</h1>
-                    <h1 >ádafffffffffffffsd</h1>
-                    <h1 >ádaffffffffffffsd</h1>
-                    <h1 >ádaffffffffffsd</h1>
-                    <h1 >ádafffffffffsd</h1>
                 </Col>
 
 
