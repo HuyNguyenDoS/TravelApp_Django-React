@@ -35,7 +35,6 @@ class CategorySerializer(serializers.ModelSerializer):
         model = Category
         fields = "__all__"
 
-
 class DepartmentSeriliazer(ModelSerializer):
     class Meta:
         model = Department
@@ -64,7 +63,6 @@ class TransportSerializer(serializers.ModelSerializer):
     class Meta:
         model = Transport
         fields = ['id', 'name_transport', 'seat', 'name_tour']
-
 
 class TourSerializer(serializers.ModelSerializer):
     # image = serializers.SerializerMethodField(source='imageTour')
@@ -104,7 +102,6 @@ class TourDetailSerializer(TourSerializer):
     class Meta:
         model = TourSerializer.Meta.model
         fields = TourSerializer.Meta.fields + ["rate"]
-
 
 class RatingSerializer(ModelSerializer):
     class Meta:

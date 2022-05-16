@@ -14,7 +14,6 @@ class TourForm(forms.ModelForm):
         model = Tour
         fields = '__all__'
 
-
 class TourAdmin(admin.ModelAdmin):
     list_display = ("id", "name_tour", "active")
 
@@ -34,7 +33,6 @@ class TravelappAdmin(admin.ModelAdmin):
                     .format(url=course.image.name)
             )
 
-
 class CategoryAdmin(admin.ModelAdmin):
     search_fields = ['name']
     list_filter = ['name', 'created_date']
@@ -52,3 +50,4 @@ admin.site.register(Transport)
 admin.site.register(Hotel)
 admin.site.register(Customer)
 admin.site.register(Article)
+
