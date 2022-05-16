@@ -75,9 +75,9 @@ class Tour(ModelBase):
 
     tourguide = models.ForeignKey(TourGuide, related_name="Tour", null=True, on_delete=models.SET_NULL)
     customers = models.ManyToManyField('Customer')
-    hotels = models.ManyToManyField('Hotel')
+    hotels = models.ManyToManyField('Hotel',null= True)
     transports = models.ManyToManyField('Transport')
-    arrivals = models.ManyToManyField('Arrival')
+    arrivals = models.ManyToManyField('Arrival',null=True)
 
     category = models.ForeignKey(Category, related_name='tours', null=True, on_delete=models.SET_NULL)
 

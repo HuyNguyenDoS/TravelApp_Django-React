@@ -88,11 +88,6 @@ export default function IndexNavbar() {
               </div>
               <Link className='nav-link text-success' to='#' onClick={logout}>Logout</Link>
             </>
-            ///sai mk sai ten dn
-          }
-          else
-          {
-            console.info('sai ten dn mk')
           }
         }
 
@@ -135,6 +130,7 @@ export default function IndexNavbar() {
                   })
                   }
               </Nav>
+           
               <NavItem>
                 <NavLink  >
                  {path}

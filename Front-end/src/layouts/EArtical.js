@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom'
 export default function EArtical(props) {
     let path = `/articals/${props.obj.id}/`
   return (
-      //Cho hiện danh sách tour
+      //Cho hiện danh sách bài viết
       <Col md={4} xs={12}>
           <Card>
             <Link to={path}>

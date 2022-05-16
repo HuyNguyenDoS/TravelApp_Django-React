@@ -1,9 +1,8 @@
-import React, { useEffect, useState ,useRef } from 'react'
-import { Badge, Col, Container, Form, Image, Row, Spinner } from 'react-bootstrap'
+import React, { useEffect, useState  } from 'react'
+import { Col, Form, Image, Row, Spinner } from 'react-bootstrap'
 import { useParams, Link } from 'react-router-dom'
 import Apis, { endpoints } from '../configs/Apis'
 import Moment from 'react-moment';
-import { Button } from 'bootstrap';
 import { useSelector } from 'react-redux';
 import cookies from 'react-cookies';
 import IndexNavbar from '../layouts/IndexNavbar';
@@ -25,7 +24,7 @@ export default function TourDetail() {
       let loadTourDetail = async () => {
         try {
             let res = await Apis.get(endpoints["tour-detail"](tourId),
-            //  {
+            // {
             //     headers: {
             //         "Authorization": `Bearer ${cookies.load("access_token")}`
             //     }
@@ -59,11 +58,13 @@ export default function TourDetail() {
       try {
           let res = await Apis.post(endpoints['add-comment'](tourId), {
               "content": commentContent
-          }, {
+          }
+          ,{
               headers: {
                   "Authorization": `Bearer ${cookies.load("access_token")}`
               }
-          })
+          }
+          )
 
           console.info(res.data)
           comments.push(res.data)
@@ -77,15 +78,17 @@ export default function TourDetail() {
   }
 
     const saveRating = async (rate) => {
-      if (window.confirm("Ban muon danh gia bai hoc nay?") == true) {
+      if (window.confirm("Ban muon danh gia tour nay?") == true) {
           try {
               let res = await Apis.post(endpoints['rating'](tourId), {
                   'rating': rate
-              }, {
+              }
+              ,{
                   headers: {
                       "Authorization": `Bearer ${cookies.load("access_token")}`
                   }
-              })
+              }
+              )
               console.info(res.data)
           } catch (err) {
               console.error(err)
@@ -140,9 +143,6 @@ export default function TourDetail() {
             </Col>
         </Row>
         <hr />
-        {/* <div>
-           {arrival.content}
-        </div> */}
         {comment}
         <hr />
         {comments.map(c => <Row>

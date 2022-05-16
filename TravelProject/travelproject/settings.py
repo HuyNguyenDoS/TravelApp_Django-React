@@ -108,8 +108,11 @@ INTERNAL_IPS = [
 ROOT_URLCONF = 'travelproject.urls'
 
 OAUTH2_INFO = {
-    "client_id": 'qclzHU1M5GKTcz9yeOMpl6KefLJgtJotHyN1kQPQ',
-    "client_secret": 'hriqw6VW9UADs1FYHPB1w7vT7C1r3uLnx7l7CoO5e5k9toiwdZW1ghYorOjOaLzn09dDgmV2C9ertfrFyWYBae3SqFf2p66PujjYfBhIlNLCukyufRvRuuxhWkxBWmLg'
+
+    "client_id": 'OSjT4diqTdUKH8VfWBkkytBDI8MKMLh7jwcUpCi8',
+    "client_secret": 'W3YspZskopt9Sq2OT5eEt9wB54Y4J6QCuNMsKIjOcPGo9uqFcHfus1KR6XPCsIxptOq5Kdw6zjgiGenoEuLAsoBMOmOMTnWUh7Q8V1lQQFZC5iDQb7WQzOdXkUPiXLce'
+}
+
 
 }
 
@@ -146,7 +149,7 @@ WSGI_APPLICATION = 'travelproject.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'travelappdb',
+        'NAME': 'travelappdb1',
         'USER': 'root',
         'PASSWORD': '123456789',
         'HOST': ''  # mặc định localhost

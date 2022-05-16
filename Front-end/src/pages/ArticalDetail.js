@@ -1,16 +1,14 @@
 import React, { useEffect, useState ,useRef } from 'react'
-import { Badge, Col, Container, Form, Image, Row, Spinner } from 'react-bootstrap'
+import {  Col, Container, Form, Image, Row, Spinner } from 'react-bootstrap'
 import { useParams, Link } from 'react-router-dom'
 import Apis, { endpoints } from '../configs/Apis'
 import Moment from 'react-moment';
-import { Button } from 'bootstrap';
 import { useSelector } from 'react-redux';
 import cookies from 'react-cookies';
 import IndexNavbar from '../layouts/IndexNavbar';
 import IndexHeader from '../layouts/IndexHeader';
-import Rating from "react-rating"
 
-//Xu
+
 export default function ArticalDetail() {
     const [artical, setArtical] = useState(null)
     let { articalId } = useParams()
