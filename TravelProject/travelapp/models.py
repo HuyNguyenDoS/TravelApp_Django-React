@@ -9,7 +9,7 @@ class User(AbstractUser):
     avatar = models.ImageField(null=True, upload_to='users/%Y/%m')
 
 
-#login bằng email
+# login bằng email
 # class User(AbstractUser):
 #     # Delete not use field
 #     username = None
@@ -30,7 +30,7 @@ def upload_to(instance, filename):
 
 
 class Category(models.Model):
-    name = models.CharField(max_length=50,null=False, unique=True)
+    name = models.CharField(max_length=50, null=False, unique=True)
 
     def __str__(self):
         return self.name
@@ -72,6 +72,8 @@ class Tour(ModelBase):
     phone = models.TextField()
     imageTour = models.ImageField(null=True, blank=True, upload_to='imageTour/%Y/%m')
     price = models.IntegerField(default=0)
+    #priceChild
+    #dcriptiuon
 
     tourguide = models.ForeignKey(TourGuide, related_name="Tour", null=True, on_delete=models.SET_NULL)
     customers = models.ManyToManyField('Customer')
@@ -84,10 +86,6 @@ class Tour(ModelBase):
     def __str__(self):
         return self.name_tour
 
-
-
-class Ticket(ModelBase):
-    name_ticket = models.TextField()
 
 class Ticket(ModelBase):
     name_ticket = models.TextField()
@@ -107,6 +105,7 @@ class Customer(ModelBase):
 
     def __str__(self):
         return self.name_customer
+
 
 class Hotel(ModelBase):
     name_hotel = models.TextField()
@@ -144,25 +143,42 @@ class ActionBase(models.Model):
         abstract = True
 
 
+# action, like, rating, view
+
 class TourView(ModelBase):
     views = models.IntegerField(default=0)
     tour = models.OneToOneField(Tour, on_delete=models.CASCADE)
 
 
-class Action(ActionBase):
-    LIKE, HAHA, HEART = range(3)
+class Rating(ActionBase):
+    one_star, two_star, three_star, four_star, five_star = range(5)
     ACTIONS = [
-        (LIKE, 'like'),
-        (HAHA, 'haha'),
-        (HEART, 'heart')
+        (one_star, '1 Star'),
+        (two_star, '2 Star'),
+        (three_star, '3 Star'),
+        (four_star, '4 Star'),
+        (five_star, '5 Star'),
+    ]
+    typr = models.PositiveSmallIntegerField(choices=ACTIONS, default=five_star)
 
+
+class Action(ActionBase):
+    LIKE, NOT_LIKE = range(2)
+    ACTIONS = [
+        (LIKE, 'Like'),
+        (NOT_LIKE, 'Not like'),
     ]
     type = models.PositiveSmallIntegerField(choices=ACTIONS, default=LIKE)
 
 
-class Rating(ActionBase):
-    rate = models.PositiveSmallIntegerField(default=0)
+# table bai viet, tin tuc, tour
+class CommentTour(ModelBase):
+    content = models.TextField()
+    tour = models.ForeignKey(Tour, related_name='comments_tour', on_delete=models.CASCADE, null=True)
+    creator = models.ForeignKey(User, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return self.content
 
 class Article(ModelBase):
     topic = models.TextField()
@@ -172,15 +188,8 @@ class Article(ModelBase):
     def __str__(self):
         return self.topic
 
-
-class Comment(ModelBase):
+class CommentArtical(ModelBase):
     content = models.TextField()
-    tour = models.ForeignKey(Tour, related_name='comments', on_delete=models.CASCADE,null=True)
-    artical = models.ForeignKey(Article, related_name='comments', on_delete=models.CASCADE,default="0",null=True)
+    artical = models.ForeignKey(Article, related_name='comments_artical', on_delete=models.CASCADE, default="0", null=True)
     creator = models.ForeignKey(User, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.content
-
-
 

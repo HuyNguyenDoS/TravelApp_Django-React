@@ -11,6 +11,7 @@ router.register(prefix='departments', viewset=views.DepartmentViewSet, basename=
 router.register(prefix='tourguides', viewset=views.TourguideViewSet, basename='tourguide')
 router.register(prefix='hotels', viewset=views.HotelViewSet, basename='hotel')
 router.register(prefix='arrivals', viewset=views.ArrivalViewSet, basename='arrival')
+router.register(prefix='AdminStatTourView', viewset=views.AdminStatTourView,basename='adminstattour')
 
 #bai viet
 router.register(prefix='articals', viewset=views.ArticalViewset, basename='artical')

@@ -1,6 +1,6 @@
 from rest_framework import serializers
-from .models import User, Tour, Category, Comment, Rating, TourView,Action, \
-    Hotel, Transport, Arrival, TourGuide,Department,Article
+from .models import User, Tour, Category, CommentTour, Rating, TourView, Action, \
+    Hotel, Transport, Arrival, TourGuide, Department, Article, CommentArtical
 from rest_framework.serializers import ModelSerializer, SerializerMethodField
 
 
@@ -8,7 +8,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['username', 'password', 'first_name', 'avatar',
-                  'last_name', 'email', 'date_joined', 'id']
+                  'last_name', 'email', 'date_joined', 'id', 'is_superuser', 'is_staff']
         extra_kwargs = {
             'password': {'write_only': 'true'}
         }
@@ -23,6 +23,11 @@ class UserSerializer(serializers.ModelSerializer):
         return u
 
 
+class SocialAuthSerializer(serializers.Serializer):
+    provider = serializers.CharField(max_length=255, required=True)
+    access_token = serializers.CharField(max_length=4096, required=True, trim_whitespace=True)
+
+
 # class PostSerializer(serializers.ModelSerializer):
 #     class Meta:
 #         model = Post
@@ -35,6 +40,7 @@ class CategorySerializer(serializers.ModelSerializer):
         model = Category
         fields = "__all__"
 
+
 class DepartmentSeriliazer(ModelSerializer):
     class Meta:
         model = Department
@@ -45,7 +51,8 @@ class DepartmentSeriliazer(ModelSerializer):
 class HotelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Hotel
-        fields = ['name_hotel']
+        fields = "__all__"
+
 
 class ArrivalSerializer(ModelSerializer):
     class Meta:
@@ -63,6 +70,7 @@ class TransportSerializer(serializers.ModelSerializer):
     class Meta:
         model = Transport
         fields = ['id', 'name_transport', 'seat', 'name_tour']
+
 
 class TourSerializer(serializers.ModelSerializer):
     # image = serializers.SerializerMethodField(source='imageTour')
@@ -83,8 +91,8 @@ class TourSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Tour
-        fields = ['id','name_tour', 'created_date', 'updated_date','address', 'hotels', 'tourguide', 'arrivals'
-            , 'imageTour','price']
+        fields = ['id', 'name_tour', 'created_date', 'updated_date', 'address', 'hotels', 'tourguide', 'arrivals'
+            , 'imageTour', 'price', 'category_id']
 
 
 class TourDetailSerializer(TourSerializer):
@@ -102,6 +110,7 @@ class TourDetailSerializer(TourSerializer):
     class Meta:
         model = TourSerializer.Meta.model
         fields = TourSerializer.Meta.fields + ["rate"]
+
 
 class RatingSerializer(ModelSerializer):
     class Meta:
@@ -128,14 +137,34 @@ class ArticalSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class CommentSerializer(ModelSerializer):
+class CommentTourSerializer(ModelSerializer):
     creator = SerializerMethodField()
 
     def get_creator(self, comment):
         return UserSerializer(comment.creator, context={"request": self.context.get('request')}).data
 
     class Meta:
-        model = Comment
+        model = CommentTour
         fields = ['id', 'content', 'created_date', 'updated_date', 'creator']
 
 
+class CommentArticalSerializer(ModelSerializer):
+    creator = SerializerMethodField()
+
+    def get_creator(self, comment):
+        return UserSerializer(comment.creator, context={"request": self.context.get('request')}).data
+
+    class Meta:
+        model = CommentArtical
+        fields = ['id', 'content', 'created_date', 'updated_date', 'creator']
+
+
+# serializer cho thong ke
+
+class AdminStatTour(ModelSerializer):
+    # def get_data(self, t):
+    #     t = Tour.objects.count()
+
+    class Meta:
+        model = Tour
+        fields = "__all__"

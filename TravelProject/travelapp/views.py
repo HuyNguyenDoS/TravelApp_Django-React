@@ -8,16 +8,18 @@ from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, FormParser
 from django.views.generic import View
 from .paginators import BasePaginator
-from .models import User, Rating, Comment, Tour, Category, TourView,Action\
-    , Department, TourGuide, Hotel, Arrival,Article
-from .serializers import UserSerializer, CategorySerializer, TourSerializer, CommentSerializer, ActionSerializer, \
-    TourDetailSerializer, TourViewSerializer, RatingSerializer, TourguideSerializer,\
-    HotelSerializer, ArrivalSerializer , DepartmentSeriliazer,ArticalSerializer
+from .models import User, Rating, CommentTour, Tour, Category, TourView, Action \
+    , Department, TourGuide, Hotel, Arrival, Article, CommentArtical
+from .serializers import UserSerializer, CategorySerializer, TourSerializer, CommentTourSerializer, ActionSerializer, \
+    TourDetailSerializer, TourViewSerializer, RatingSerializer, TourguideSerializer, \
+    HotelSerializer, ArrivalSerializer, DepartmentSeriliazer, ArticalSerializer, CommentArticalSerializer, \
+    AdminStatTour
 
 from .perms import CommentOwnerPerms
 from django.db.models import F
 from django.http import Http404
 from django.conf import settings
+
 
 class UserViewSet(viewsets.ViewSet, generics.CreateAPIView):
     queryset = User.objects.filter(is_active=True)
@@ -38,7 +40,7 @@ class UserViewSet(viewsets.ViewSet, generics.CreateAPIView):
 
 class AuthInfo(APIView):
     def get(self, request):
-        return Response(settings.OAUTH2_INFO, status=status.HTTP_200_OK )
+        return Response(settings.OAUTH2_INFO, status=status.HTTP_200_OK)
 
 
 class CategoryViewSet(viewsets.ViewSet, generics.ListAPIView):
@@ -81,7 +83,7 @@ class TourguideViewSet(viewsets.ViewSet, generics.RetrieveAPIView):
         return query
 
 
-class HotelViewSet(viewsets.ViewSet,  generics.ListAPIView):
+class HotelViewSet(viewsets.ViewSet, generics.ListAPIView):
     queryset = Hotel.objects.all()
     serializer_class = HotelSerializer
 
@@ -109,20 +111,10 @@ class ArrivalViewSet(viewsets.ViewSet, generics.CreateAPIView):
         return query
 
 
-class TourViewSet(viewsets.ViewSet,generics.ListAPIView):
+class TourViewSet(viewsets.ModelViewSet):
     queryset = Tour.objects.filter(active=True)
     serializer_class = TourDetailSerializer
     pagination_class = BasePaginator
-
-    #show tour details
-    def retrieve(self, request, pk):
-        try:
-            tour = Tour.objects.get(pk=pk)
-
-        except Tour.DoesNotExist:
-            return Http404()
-
-        return Response(TourDetailSerializer(tour).data)
 
     def get_queryset(self):
         tours = Tour.objects.filter(active=True)
@@ -140,7 +132,7 @@ class TourViewSet(viewsets.ViewSet,generics.ListAPIView):
     @swagger_auto_schema(
         operation_description='Get the comments of a tour',
         responses={
-            status.HTTP_200_OK: CommentSerializer()
+            status.HTTP_200_OK: CommentTourSerializer()
         }
     )
     def get_permissions(self):
@@ -153,11 +145,11 @@ class TourViewSet(viewsets.ViewSet,generics.ListAPIView):
     def add_comment(self, request, pk):
         content = request.data.get('content')
         if content:
-            c = Comment.objects.create(content=content,
-                                       tour=self.get_object(),
-                                       creator=request.user)
+            c = CommentTour.objects.create(content=content,
+                                           tour=self.get_object(),
+                                           creator=request.user)
 
-            return Response(CommentSerializer(c, context={"request": request}).data,
+            return Response(CommentTourSerializer(c, context={"request": request}).data,
                             status=status.HTTP_201_CREATED)
 
         return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -190,7 +182,6 @@ class TourViewSet(viewsets.ViewSet,generics.ListAPIView):
             return Response(RatingSerializer(r).data,
                             status=status.HTTP_200_OK)
 
-
     @action(methods=['get'], detail=True, url_path='views')
     def inc_view(self, request, pk):
         v, created = TourView.objects.get_or_create(tour=self.get_object())
@@ -207,7 +198,7 @@ class TourViewSet(viewsets.ViewSet,generics.ListAPIView):
         tour = self.get_object()
         comments = tour.comments.select_related('creator').filter(active=True)
 
-        return Response(CommentSerializer(comments, many=True).data,
+        return Response(CommentTourSerializer(comments, many=True).data,
                         status=status.HTTP_200_OK)
 
 
@@ -215,10 +206,11 @@ class TourDetailViewSet(viewsets.ViewSet, generics.RetrieveAPIView):
     queryset = Tour.objects.filter(active=True)
     serializer_class = TourDetailSerializer
 
+
 class CommentViewSet(viewsets.ViewSet, generics.DestroyAPIView,
                      generics.UpdateAPIView):
-    queryset = Comment.objects.all()
-    serializer_class = CommentSerializer
+    queryset = CommentTour.objects.all()
+    serializer_class = CommentTourSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def destroy(self, request, *args, **kwargs):
@@ -234,9 +226,7 @@ class CommentViewSet(viewsets.ViewSet, generics.DestroyAPIView,
         return Response(status=status.HTTP_403_FORBIDDEN)
 
 
-# Viewset cho bai viet
-# class ArticalViewset(viewsets.ViewSet, generics.ListAPIView, generics.RetrieveAPIView,
-#                      generics.UpdateAPIView, generics.DestroyAPIView, generics.CreateAPIView):
+
 class ArticalViewset(viewsets.ModelViewSet):
     queryset = Article.objects.all()
     serializer_class = ArticalSerializer
@@ -262,11 +252,11 @@ class ArticalViewset(viewsets.ModelViewSet):
     def add_comment(self, request, pk):
         content = request.data.get('content')
         if content:
-            c = Comment.objects.create(content=content,
-                                       artical=self.get_object(),
-                                       creator=request.user)
+            c = CommentArtical.objects.create(content=content,
+                                           artical=self.get_object(),
+                                           creator=request.user)
 
-            return Response(CommentSerializer(c, context={"request": request}).data,
+            return Response(CommentArticalSerializer(c, context={"request": request}).data,
                             status=status.HTTP_201_CREATED)
 
         return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -289,9 +279,15 @@ class ArticalViewset(viewsets.ModelViewSet):
     def get_comments(self, request, pk):
         artical = self.get_object()
         comments = artical.comments.select_related('creator').filter(active=True)
-        return Response(CommentSerializer(comments, many=True).data,
+        return Response(CommentArticalSerializer(comments, many=True).data,
                         status=status.HTTP_200_OK)
-#login facebook
+
+# API thong ke
+class AdminStatTourView(viewsets.ViewSet, generics.ListAPIView):
+    queryset = Tour.objects.count()
+    serializer_class = AdminStatTour
+
+# login facebook
 # class PostList(generics.ListAPIView):
 #
 #     serializer_class = PostSerializer
