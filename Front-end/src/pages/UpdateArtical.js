@@ -84,14 +84,20 @@ const UpdateTour = (props) => {
         }
 
         //update bài viết
-        await axios({
-            method: 'PUT',
-            url: `http://127.0.0.1:8000/articals/${articalId}/`,
-            data: formField
-        }).then(response => {
-            console.log(response.data);
-            navigate("/admin");
-        })
+        if (window.confirm("Ban có chắc chắn sửa tin tức nay?") == true) {
+          try {
+            await axios({
+                method: 'PUT',
+                url: `http://127.0.0.1:8000/articals/${articalId}/`,
+                data: formField
+            }).then(response => {
+                console.log(response.data);
+                navigate("/admin");
+            })
+          } catch (err) {
+          console.error(err)
+          }
+      }
 
     }
 
