@@ -13,9 +13,9 @@ user.save()
 -cái phần "http://127.0.0.1:8000/" lưu ý
 
 ////Còn phải làm
-- Tạo trang admin để sử dụng API thêm sửa xóa
+- Tạo trang admin để sử dụng API thêm sửa xóa ---/ done
 - Khách hàng đặt tour du lịch (giá tour phân biệt người lớn/trẻ em, giá có thể linh hoạt
-thay đổi)
+thay đổi) --/ done
 - Thanh toán trực tuyến
-- Dùng trang admin để thống kê báo cáo
+- Dùng trang admin để thống kê báo cáo, doanh thu theo ticket  ---/ nguyen
 - Đăng nhập bằng gmail, facebook

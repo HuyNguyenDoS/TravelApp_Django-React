@@ -9,24 +9,75 @@ class User(AbstractUser):
     avatar = models.ImageField(null=True, upload_to='users/%Y/%m')
 
 
-# login bằng email
-# class User(AbstractUser):
-#     # Delete not use field
-#     username = None
-#     last_login = None
-#     is_staff = None
-#     is_superuser = None
-#
-#     password = models.CharField(max_length=100)
-#     email = models.EmailField(max_length=100, unique=True)
-#     USERNAME_FIELD = 'email'
-#     REQUIRED_FIELDS = []
-#
-#     def __str__(self):
-#         return self.email
-#
 def upload_to(instance, filename):
     return 'posts/{filename}'.format(filename=filename)
+
+
+class ModelBase(models.Model):
+    # name = models.CharField(max_length=255, null=False)
+    active = models.BooleanField(default=True)
+    created_date = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimeField(auto_now=True)
+    email = models.EmailField(max_length=254, null=False)
+    phone = models.CharField(max_length=255, null=False)
+    address = models.TextField(null=True, blank=True)
+
+    class Meta:
+        abstract = True
+
+    def __str__(self):
+        return self.name
+
+
+# model nhân viên
+class Staff(ModelBase):
+    class Meta:
+        unique_together = ('email', 'phone', 'avatar')
+
+    avatar = models.ImageField(upload_to='images/avatars/%Y/%m', null=True, default=None)
+
+    def __str__(self):
+        return self.name
+
+
+class TourGuide(ModelBase):
+    name_tourguide = models.TextField()
+    address = models.TextField()
+    phone = models.TextField
+    imageTourGuide = models.ImageField(null=True, blank=True, upload_to='imageTourGuide/%Y/%m')
+
+    def __str__(self):
+        return self.name_tourguide
+
+
+class Tour(ModelBase):
+    name_tour = models.CharField(max_length=255, null=False)
+    plan_tour = RichTextField(default=None, null=True)
+    description = RichTextField(default=None, null=True)
+    banner = models.ImageField(upload_to='imageBanner/%Y/%m', default=None)
+    quantity = models.IntegerField(default=0, null=True)
+
+    departure = models.CharField(max_length=255, null=True)
+    depart_date = models.DateField(null=True, blank=True)
+    duration = models.CharField(max_length=50, null=True)
+
+    price_of_tour = models.FloatField(null=False, blank=False)
+    price_of_tour_child = models.FloatField(null=False, default=0)
+    price_of_room = models.FloatField(null=False, blank=False)
+
+    rating = models.FloatField(null=True, blank=True)
+
+    imageTour = models.ImageField(null=True, blank=True, upload_to='imageTour/%Y/%m')
+
+    tourguide = models.ForeignKey(TourGuide, related_name="Tour", null=True, on_delete=models.SET_NULL)
+    category = models.ForeignKey('Category', related_name='tours', null=True, on_delete=models.SET_NULL)
+
+    class Meta:
+        unique_together = ('name_tour', 'category')
+        ordering = ["-id"]
+
+    def __str__(self):
+        return self.name_tour
 
 
 class Category(models.Model):
@@ -36,130 +87,51 @@ class Category(models.Model):
         return self.name
 
 
-class ModelBase(models.Model):
+class Artical(models.Model):
+    class Meta:
+        ordering = ["-id"]
+
+    title = models.CharField(max_length=255, null=False, unique=True)
+    image = models.ImageField(upload_to='images/artical/%Y/%m', default=None)
+    author = models.CharField(max_length=100, null=True, default=None)
+    content = RichTextField()
+    likes = models.IntegerField(null=True, blank=True)
+    created_date = models.DateTimeField(auto_now_add=True)
     active = models.BooleanField(default=True)
-    created_date = models.DateTimeField(auto_now_add=True)
-    updated_date = models.DateTimeField(auto_now=True)
 
+    def __str__(self):
+        return "%s - Ngày tạo: %s" % (self.title, self.created_date.strftime("%Y-%m-%d"))
+
+
+# comment cho bài viết và tour
+class Comment(models.Model):
     class Meta:
-        abstract = True
+        ordering = ["-id"]
 
-
-class Department(ModelBase):
-    name_department = models.CharField(max_length=50)
-    address = models.TextField()
-    phone = models.TextField()
-
-    def __str__(self):
-        return self.name_department
-
-
-class TourGuide(ModelBase):
-    name_tourguide = models.TextField()
-    address = models.TextField()
-    phone = models.TextField
-    imageTourGuide = models.ImageField(null=True, blank=True, upload_to='imageTourGuide/%Y/%m')
-
-    department = models.ForeignKey(Department, related_name="Department", null=True, on_delete=models.SET_NULL)
-
-    def __str__(self):
-        return self.name_tourguide
-
-
-class Tour(ModelBase):
-    name_tour = models.TextField()
-    address = models.TextField()
-    phone = models.TextField()
-    imageTour = models.ImageField(null=True, blank=True, upload_to='imageTour/%Y/%m')
-    price = models.IntegerField(default=0)
-    #priceChild
-    #dcriptiuon
-
-    tourguide = models.ForeignKey(TourGuide, related_name="Tour", null=True, on_delete=models.SET_NULL)
-    customers = models.ManyToManyField('Customer')
-    hotels = models.ManyToManyField('Hotel')
-    transports = models.ManyToManyField('Transport')
-    arrivals = models.ManyToManyField('Arrival')
-
-    category = models.ForeignKey(Category, related_name='tours', null=True, on_delete=models.SET_NULL)
-
-    def __str__(self):
-        return self.name_tour
-
-
-class Ticket(ModelBase):
-    name_ticket = models.TextField()
-
-    department = models.ForeignKey(Department, related_name="department", null=True, on_delete=models.CASCADE)
-    tour = models.ForeignKey(Tour, related_name="tour", null=True, on_delete=models.SET_NULL)
-    customers = models.ManyToManyField('Customer')
-
-    def __str__(self):
-        return self.name_ticket
-
-
-class Customer(ModelBase):
-    name_customer = models.TextField()
-    address = models.TextField()
-    iden = models.CharField(max_length=10)
-
-    def __str__(self):
-        return self.name_customer
-
-
-class Hotel(ModelBase):
-    name_hotel = models.TextField()
-    address = models.TextField()
-
-    def __str__(self):
-        return self.name_hotel
-
-
-class Transport(ModelBase):
-    name_transport = models.TextField()
-    seat = models.IntegerField()
-
-    def __str__(self):
-        return self.name_transport
-
-
-class Arrival(ModelBase):
-    name_arrival = models.TextField()
-    address = models.TextField()
-
-    hotel = models.ForeignKey(Hotel, related_name="hotel", null=True, on_delete=models.SET_NULL)
-
-    def __str__(self):
-        return self.name_arrival
-
-
-class ActionBase(models.Model):
+    content = RichTextField()
     created_date = models.DateTimeField(auto_now_add=True)
-    updated_date = models.DateTimeField(auto_now=True)
-    tour = models.ForeignKey(Tour, on_delete=models.CASCADE)
-    creator = models.ForeignKey(User, on_delete=models.CASCADE)
-
-    class Meta:
-        abstract = True
+    user = models.ForeignKey(User, related_name="comments", on_delete=models.CASCADE, null=True)
+    artical = models.ForeignKey(Artical, related_name="commentsArtical", on_delete=models.CASCADE, null=True)
+    tour = models.ForeignKey(Tour, related_name="commentsTour", on_delete=models.CASCADE, null=True)
 
 
 # action, like, rating, view
+class ActionBase(models.Model):
+    created_date = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimeField(auto_now=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
-class TourView(ModelBase):
-    views = models.IntegerField(default=0)
-    tour = models.OneToOneField(Tour, on_delete=models.CASCADE)
+    class Meta:
+        abstract = True
 
 
 class Rating(ActionBase):
-    one_star, two_star, three_star, four_star, five_star = range(5)
-    ACTIONS = [
-        (one_star, '1 Star'),
-        (two_star, '2 Star'),
-        (three_star, '3 Star'),
-        (four_star, '4 Star'),
-        (five_star, '5 Star'),
-    ]
-    typr = models.PositiveSmallIntegerField(choices=ACTIONS, default=five_star)
+    rate = models.PositiveSmallIntegerField(default=0)
+    tour = models.ForeignKey(Tour, related_name="ratings", on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ("tour", "user")
+        ordering = ["-id"]
 
 
 class Action(ActionBase):
@@ -169,27 +141,59 @@ class Action(ActionBase):
         (NOT_LIKE, 'Not like'),
     ]
     type = models.PositiveSmallIntegerField(choices=ACTIONS, default=LIKE)
+    artical = models.ForeignKey(Artical, related_name="actions", on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ("artical", "user")
 
 
-# table bai viet, tin tuc, tour
-class CommentTour(ModelBase):
-    content = models.TextField()
-    tour = models.ForeignKey(Tour, related_name='comments_tour', on_delete=models.CASCADE, null=True)
-    creator = models.ForeignKey(User, on_delete=models.CASCADE)
+# Thông tin khách hàng
+class Customer(ModelBase):
+    class Meta:
+        ordering = ["-id"]
+
+    ADULT, CHILD = range(2)
+    AGES = [
+        (ADULT, 'adult'),
+        (CHILD, 'child')
+    ]
+    avatar = models.ImageField(upload_to='customerAvatar/%Y/%m', null=True, default=None)
+    age = models.PositiveSmallIntegerField(choices=AGES, default=ADULT)
+    payment = models.ForeignKey('Payment', related_name='customers', on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
-        return self.content
+        return self.name_customer
 
-class Article(ModelBase):
-    topic = models.TextField()
-    content = models.TextField()
-    image_Artical = models.ImageField(null=True, upload_to='imageArtical/%Y/%m')
+
+# Thanh toán online
+class Payment(models.Model):
+    class Meta:
+        ordering = ["-id"]
+
+    name = models.CharField(max_length=255, null=False)
+    email = models.EmailField(max_length=254, null=False)
+    phone = models.CharField(max_length=255, null=False)
+    address = models.TextField(null=True, blank=True)
 
     def __str__(self):
-        return self.topic
+        return self.name
 
-class CommentArtical(ModelBase):
-    content = models.TextField()
-    artical = models.ForeignKey(Article, related_name='comments_artical', on_delete=models.CASCADE, default="0", null=True)
-    creator = models.ForeignKey(User, on_delete=models.CASCADE)
 
+class Invoice(models.Model):
+    class Meta:
+        ordering = ["-id"]
+
+    WAITING, COMPLETED = range(2)
+    STATUS_PAYMENT = [
+        (WAITING, 'waiting'),
+        (COMPLETED, 'completed')
+    ]
+    total_amount = models.FloatField(null=True, blank=True)
+    created_date = models.DateTimeField(auto_now_add=True)
+    note = models.TextField(null=True, blank=True)
+    status_payment = models.PositiveSmallIntegerField(choices=STATUS_PAYMENT, default=WAITING)
+    tour = models.ForeignKey('Tour', related_name='invoices', null=True, on_delete=models.SET_NULL)
+    payment = models.ForeignKey('Payment', related_name='invoices', on_delete=models.SET_NULL, null=True)
+
+    def __str__(self):
+        return "Mã hóa đơn %s - Ngày tạo: %s" % (str(self.id), self.created_date.strftime("%Y-%m-%d"))

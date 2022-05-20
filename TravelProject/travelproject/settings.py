@@ -47,7 +47,6 @@ INSTALLED_APPS = [
     'drf_social_oauth2',# login facebook
     'ckeditor',
     'ckeditor_uploader',
-
     'social.apps.django_app.default',
 ]
 
@@ -113,8 +112,8 @@ INTERNAL_IPS = [
 ROOT_URLCONF = 'travelproject.urls'
 
 OAUTH2_INFO = {
-    "client_id": 'GWCFSek5uxQ9eh3sbXUM9Q64H9Mv8MlPFgOS6AA4',
-    "client_secret": '0E2vdtMs40BtiyP89zjcPaLYJkmKtfXNP9RASOFkppPdjQMb7ae826iUt607fdT2TudmhT41J5frI5GPZwGlXR96GosGHwtRbCCp3AEuZgUeSj7XySQdze8LTIfqoJoQ'
+    "client_id": 'XqWvUXS4u629UIHbcvwtRBW1V4RH48Jnrg34CCfq',
+    "client_secret": 'ZZESTqlVRG1CRgBvVbNKvWExfjBghJwBYL8h3kVKodxxoASsorPLFWizOHlPwGPXG6vX31DIehjCvU2Fb9V0IyIdCM7Fs6s2XOtLJ6UhBe373dP6WKdZWboC4btwiNoX'
 
 }
 

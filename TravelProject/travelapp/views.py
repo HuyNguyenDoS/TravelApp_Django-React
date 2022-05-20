@@ -7,13 +7,9 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, FormParser
 from django.views.generic import View
-from .paginators import BasePaginator
-from .models import User, Rating, CommentTour, Tour, Category, TourView, Action \
-    , Department, TourGuide, Hotel, Arrival, Article, CommentArtical
-from .serializers import UserSerializer, CategorySerializer, TourSerializer, CommentTourSerializer, ActionSerializer, \
-    TourDetailSerializer, TourViewSerializer, RatingSerializer, TourguideSerializer, \
-    HotelSerializer, ArrivalSerializer, DepartmentSeriliazer, ArticalSerializer, CommentArticalSerializer, \
-    AdminStatTour
+from .paginators import *
+from .models import *
+from .serializers import *
 
 from .perms import CommentOwnerPerms
 from django.db.models import F
@@ -37,36 +33,154 @@ class UserViewSet(viewsets.ViewSet, generics.CreateAPIView):
         return Response(self.serializer_class(request.user).data,
                         status=status.HTTP_200_OK)
 
+    # API thay đổi mật khẩu
+    @action(methods=['post'], detail=False, url_path="change-password")
+    def change_password(self, request):
+        old_password = request.data.get('old_password')
+        new_password = request.data.get('new_password')
+        account = request.user
+
+        if old_password is not None and new_password is not None and old_password != new_password:
+            if not account.check_password(old_password):
+                return Response({"old_password": ["Wrong password."]}, status=status.HTTP_400_BAD_REQUEST)
+
+            account.set_password(new_password)
+            account.save()
+            response = {
+                'status': 'success',
+                'message': 'Password updated successfully',
+                'data': []
+            }
+
+            return Response(response, status=status.HTTP_200_OK)
+
+        return Response({"Message": ["Errors."]}, status=status.HTTP_400_BAD_REQUEST)
+
 
 class AuthInfo(APIView):
     def get(self, request):
         return Response(settings.OAUTH2_INFO, status=status.HTTP_200_OK)
 
 
+class TourViewSet(viewsets.ModelViewSet):
+    queryset = Tour.objects.filter(active=True)
+    serializer_class = TourSerializer
+    pagination_class = TourPagination
+
+    def get_permissions(self):
+        if self.action in ['add_comment', 'take_action', 'rate']:
+            return [permissions.IsAuthenticated()]
+
+        return [permissions.AllowAny()]
+
+    @action(methods=['post'], detail=True, url_path='update_quantity')
+    def update_quantity(self, request, pk):
+        try:
+            count = int(request.data['count'])
+        except IndexError | ValueError:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        else:
+            quantity = int(Tour.objects.get(pk=pk).quantity) - count
+            if quantity > -1:
+                Tour.objects.filter(pk=pk).update(quantity=quantity)
+
+            return Response({"message": "update success"}, status=status.HTTP_200_OK)
+
+    @action(methods=['post'], detail=True, url_path='rating')
+    def rate(self, request, pk):
+        try:
+            rating = int(request.data['rating'])
+        except IndexError | ValueError:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        else:
+            r = Rating.objects.update_or_create(creator=request.user,
+                                                tour=self.get_object(),
+                                                defaults={"rate": rating})
+
+            return Response(RatingSerializer(r).data,
+                            status=status.HTTP_200_OK)
+
+    @action(methods=['post'], detail=True, url_path="add-comment")
+    def add_comment(self, request, pk):
+        content = request.data.get('content')
+        if content:
+            c = Comment.objects.create(content=content,
+                                       tour=self.get_object(),
+                                       creator=request.user)
+
+            return Response(CommentSerializer(c, context={"request": request}).data,
+                            status=status.HTTP_201_CREATED)
+
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    @action(methods=['get'], url_path='comments', detail=True)
+    def get_comments(self, request, pk):
+        tour = self.get_object()
+        comments = tour.comments.select_related('creatorTour').filter(active=True)
+
+        return Response(CommentSerializer(comments, many=True).data,
+                        status=status.HTTP_200_OK)
+
+    @swagger_auto_schema(
+        operation_description='Get the comments of a tour',
+        responses={
+            status.HTTP_200_OK: CommentSerializer()
+        }
+    )
+    @action(methods=['post'], detail=True, url_path='like')
+    def take_action(self, request, pk):
+        try:
+            action_type = int(request.data['type'])
+        except IndexError | ValueError:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        else:
+            action = Action.objects.create(type=action_type,
+                                           creator=request.user,
+                                           tour=self.get_object())
+
+            return Response(ActionSerializer(action).data,
+                            status=status.HTTP_200_OK)
+
+    def get_queryset(self):
+        tours = Tour.objects.filter(active=True)
+
+        q = self.request.query_params.get('q')
+        if q is not None:
+            if q == '1':
+                tours = tours.order_by('name_tour')
+            elif q == '2':
+                tours = tours.order_by('price_of_tour')
+            elif q == '3':
+                tours = tours.order_by('-price_of_tour')
+            elif q == '4':
+                tours = tours.order_by('-rating')
+        else:
+            pass
+
+        # tìm kiếm theo tên tour
+        q = self.request.query_params.get('q')
+        if q is not None:
+            tours = tours.filter(tour_name__icontains=q)
+
+        # tìm kiếm theo category
+        cate_id = self.request.query_params.get('category_id')
+        if cate_id is not None:
+            tours = tours.filter(category_id=cate_id)
+
+        # lọc theo giá tour
+        max_price = self.request.query_params.get('max')
+        min_price = self.request.query_params.get('min')
+        if max_price is not None:
+            tours = tours.filter(price_of_tour__lte=max_price)
+        if min_price is not None:
+            tours = tours.filter(price_of_tour__gte=min_price)
+
+        return tours
+
+
 class CategoryViewSet(viewsets.ViewSet, generics.ListAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-
-
-class DepartmentViewSet(viewsets.ViewSet, generics.CreateAPIView):
-    queryset = Department.objects.all()
-    serializer_class = DepartmentSeriliazer
-
-    def get_queryset(self):
-        query = self.queryset
-
-        kw = self.request.query_params.get('kw')
-        if kw:
-            query = query.filter(name__icontains=kw)
-
-        return query
-
-    @action(methods=['get'], detail=False, url_path="get_department")
-    def get_department(self, request, pk):
-        department = self.get_object().department
-
-        return Response(data=DepartmentSeriliazer(many=True, context={'requets': request}).data,
-                        status=status.HTTP_200_OK)
 
 
 class TourguideViewSet(viewsets.ViewSet, generics.RetrieveAPIView):
@@ -83,134 +197,21 @@ class TourguideViewSet(viewsets.ViewSet, generics.RetrieveAPIView):
         return query
 
 
-class HotelViewSet(viewsets.ViewSet, generics.ListAPIView):
-    queryset = Hotel.objects.all()
-    serializer_class = HotelSerializer
-
-    def get_queryset(self):
-        query = self.queryset
-
-        kw = self.request.query_params.get('kw')
-        if kw:
-            query = query.filter(name__icontains=kw)
-
-        return query
+class CustomerViewSet(viewsets.ViewSet, generics.ListAPIView,
+                      generics.CreateAPIView):
+    queryset = Customer.objects.all()
+    serializer_class = CustomerSerializer
 
 
-class ArrivalViewSet(viewsets.ViewSet, generics.CreateAPIView):
-    queryset = Arrival.objects.all()
-    serializer_class = ArrivalSerializer
-
-    def get_queryset(self):
-        query = self.queryset
-
-        kw = self.request.query_params.get('kw')
-        if kw:
-            query = query.filter(name__icontains=kw)
-
-        return query
-
-
-class TourViewSet(viewsets.ModelViewSet):
-    queryset = Tour.objects.filter(active=True)
-    serializer_class = TourDetailSerializer
-    pagination_class = BasePaginator
-
-    def get_queryset(self):
-        tours = Tour.objects.filter(active=True)
-
-        q = self.request.query_params.get('q')
-        if q is not None:
-            tours = tours.filter(name_tour__icontains=q)
-
-        cate_id = self.request.query_params.get('category_id')
-        if cate_id is not None:
-            tours = tours.filter(category_id=cate_id)
-
-        return tours
-
-    @swagger_auto_schema(
-        operation_description='Get the comments of a tour',
-        responses={
-            status.HTTP_200_OK: CommentTourSerializer()
-        }
-    )
-    def get_permissions(self):
-        if self.action in ['add_comment', 'take_action', 'rate']:
-            return [permissions.IsAuthenticated()]
-
-        return [permissions.AllowAny()]
-
-    @action(methods=['post'], detail=True, url_path="add-comment")
-    def add_comment(self, request, pk):
-        content = request.data.get('content')
-        if content:
-            c = CommentTour.objects.create(content=content,
-                                           tour=self.get_object(),
-                                           creator=request.user)
-
-            return Response(CommentTourSerializer(c, context={"request": request}).data,
-                            status=status.HTTP_201_CREATED)
-
-        return Response(status=status.HTTP_400_BAD_REQUEST)
-
-    @action(methods=['post'], detail=True, url_path='like')
-    def take_action(self, request, pk):
-        try:
-            action_type = int(request.data['type'])
-        except IndexError | ValueError:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-        else:
-            action = Action.objects.create(type=action_type,
-                                           creator=request.user,
-                                           tour=self.get_object())
-
-            return Response(ActionSerializer(action).data,
-                            status=status.HTTP_200_OK)
-
-    @action(methods=['post'], detail=True, url_path='rating')
-    def rate(self, request, pk):
-        try:
-            rating = int(request.data['rating'])
-        except IndexError | ValueError:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-        else:
-            r = Rating.objects.update_or_create(creator=request.user,
-                                                tour=self.get_object(),
-                                                defaults={"rate": rating})
-
-            return Response(RatingSerializer(r).data,
-                            status=status.HTTP_200_OK)
-
-    @action(methods=['get'], detail=True, url_path='views')
-    def inc_view(self, request, pk):
-        v, created = TourView.objects.get_or_create(tour=self.get_object())
-        v.views = F('views') + 1
-        v.save()
-
-        # v.views = int(v.views)
-        v.refresh_from_db()
-
-        return Response(TourViewSerializer(v).data, status=status.HTTP_200_OK)
-
-    @action(methods=['get'], url_path='comments', detail=True)
-    def get_comments(self, request, pk):
-        tour = self.get_object()
-        comments = tour.comments.select_related('creator').filter(active=True)
-
-        return Response(CommentTourSerializer(comments, many=True).data,
-                        status=status.HTTP_200_OK)
-
-
-class TourDetailViewSet(viewsets.ViewSet, generics.RetrieveAPIView):
-    queryset = Tour.objects.filter(active=True)
-    serializer_class = TourDetailSerializer
+class InvoiceViewSet(viewsets.ViewSet, generics.ListAPIView):
+    serializer_class = InvoiceSerializer
+    queryset = Invoice.objects.all()
 
 
 class CommentViewSet(viewsets.ViewSet, generics.DestroyAPIView,
                      generics.UpdateAPIView):
-    queryset = CommentTour.objects.all()
-    serializer_class = CommentTourSerializer
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def destroy(self, request, *args, **kwargs):
@@ -226,21 +227,10 @@ class CommentViewSet(viewsets.ViewSet, generics.DestroyAPIView,
         return Response(status=status.HTTP_403_FORBIDDEN)
 
 
-
 class ArticalViewset(viewsets.ModelViewSet):
-    queryset = Article.objects.all()
+    queryset = Artical.objects.all()
     serializer_class = ArticalSerializer
-    pagination_class = BasePaginator
-
-    # tim kiem theo topic bai viet
-    def get_queryset(self):
-        query = self.queryset
-
-        kw = self.request.query_params.get('kw')
-        if kw:
-            query = query.filter(topic__icontains=kw)
-
-        return query
+    pagination_class = ArticalPagination
 
     def get_permissions(self):
         if self.action in ['add_comment', 'take_action', 'rate']:
@@ -248,18 +238,12 @@ class ArticalViewset(viewsets.ModelViewSet):
 
         return [permissions.AllowAny()]
 
-    @action(methods=['post'], detail=True, url_path="add-comment")
-    def add_comment(self, request, pk):
-        content = request.data.get('content')
-        if content:
-            c = CommentArtical.objects.create(content=content,
-                                           artical=self.get_object(),
-                                           creator=request.user)
-
-            return Response(CommentArticalSerializer(c, context={"request": request}).data,
-                            status=status.HTTP_201_CREATED)
-
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+    @action(methods=['get'], detail=True, url_path="comments")
+    def get_comments(self, request, pk):
+        artical = self.get_object()
+        comments = artical.comments.select_related('creatorArtical').filter(active=True)
+        return Response(CommentSerializer(comments, many=True).data,
+                        status=status.HTTP_200_OK)
 
     @action(methods=['post'], detail=True, url_path='like')
     def take_action(self, request, pk):
@@ -275,71 +259,73 @@ class ArticalViewset(viewsets.ModelViewSet):
             return Response(ActionSerializer(action).data,
                             status=status.HTTP_200_OK)
 
-    @action(methods=['get'], detail=True, url_path="comments")
-    def get_comments(self, request, pk):
-        artical = self.get_object()
-        comments = artical.comments.select_related('creator').filter(active=True)
-        return Response(CommentArticalSerializer(comments, many=True).data,
-                        status=status.HTTP_200_OK)
+    @action(methods=['post'], detail=True, url_path="add-comment")
+    def add_comment(self, request, pk):
+        content = request.data.get('content')
+        if content:
+            c = Comment.objects.create(content=content,
+                                       artical=self.get_object(),
+                                       creator=request.user)
+
+            return Response(CommentSerializer(c, context={"request": request}).data,
+                            status=status.HTTP_201_CREATED)
+
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    # tim kiem theo topic bai viet
+    def get_queryset(self):
+        list_artical = Artical.objects.filter(active=True)
+
+        q = self.request.query_params.get('q')
+        if q is not None:
+            list_artical = list_artical.filter(title__icontains=q)
+
+        return list_artical
+
+
+class PaymentViewSet(viewsets.ViewSet, generics.CreateAPIView, generics.RetrieveAPIView):
+    serializer_class = PaymentSerializer
+    queryset = Payment.objects.all()
+
+    @action(methods=['post'], detail=True, url_path="add-customer")
+    def add_customer(self, request, pk):
+        name = request.data.get('name')
+        age = request.data.get('age')
+        gender = request.data.get('gender')
+        email = request.data.get('email')
+        phone = request.data.get('phone')
+        address = request.data.get('address')
+        age_type = 0
+
+        if name and age and gender and phone and address and email:
+            if age == 'Trẻ em':
+                age_type = 1
+            c = Customer.objects.create(name=name, age=age_type, gender=gender, address=address,
+                                        phone=phone, email=email, payer=self.get_object())
+
+            return Response(CustomerSerializer(c).data,
+                            status=status.HTTP_201_CREATED)
+
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    @action(methods=['post'], detail=True, url_path="add-invoice")
+    def add_invoice(self, request, pk):
+        total_amount = request.data.get('total_amount')
+        tour_id = request.data.get('tour_id')
+        tour = Tour.objects.get(pk=tour_id)
+        note = request.data.get('note')
+        status_payment = request.data.get('status_payment')
+
+        if total_amount:
+            inv = Invoice.objects.create(total_amount=total_amount, note=note, status_payment=status_payment,
+                                         payer=self.get_object(), tour=tour)
+
+            return Response(InvoiceSerializer(inv).data,
+                            status=status.HTTP_201_CREATED)
+
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
 # API thong ke
-class AdminStatTourView(viewsets.ViewSet, generics.ListAPIView):
-    queryset = Tour.objects.count()
-    serializer_class = AdminStatTour
-
-# login facebook
-# class PostList(generics.ListAPIView):
-#
-#     serializer_class = PostSerializer
-#     queryset = Post.objects.all()
-#
-#
-# class PostDetail(generics.RetrieveAPIView):
-#
-#     serializer_class = PostSerializer
-#
-#     def get_object(self, queryset=None, **kwargs):
-#         item = self.kwargs.get('pk')
-#         return get_object_or_404(Post, slug=item)
-#
-# # Post Search
-#
-#
-# class PostListDetailfilter(generics.ListAPIView):
-#
-#     queryset = Post.objects.all()
-#     serializer_class = PostSerializer
-#     filter_backends = [filters.SearchFilter]
-#     search_fields = ['^slug']
-#
-#
-# class CreatePost(APIView):
-#     permission_classes = [permissions.IsAuthenticated]
-#     parser_classes = [MultiPartParser, FormParser]
-#
-#     def post(self, request, format=None):
-#         print(request.data)
-#         serializer = PostSerializer(data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data, status=status.HTTP_200_OK)
-#         else:
-#             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-#
-#
-# class AdminPostDetail(generics.RetrieveAPIView):
-#     permission_classes = [permissions.IsAuthenticated]
-#     queryset = Post.objects.all()
-#     serializer_class = PostSerializer
-#
-#
-# class EditPost(generics.UpdateAPIView):
-#     permission_classes = [permissions.IsAuthenticated]
-#     serializer_class = PostSerializer
-#     queryset = Post.objects.all()
-#
-#
-# class DeletePost(generics.RetrieveDestroyAPIView):
-#     permission_classes = [permissions.IsAuthenticated]
-#     serializer_class = PostSerializer
-#     queryset = Post.objects.all()
+# class AdminStatTourView(viewsets.ViewSet, generics.ListAPIView):
+#     queryset = Tour.objects.count()
+#     serializer_class = AdminStatTour
