@@ -94,7 +94,6 @@ class ArticalSerializer(serializers.ModelSerializer):
     # type = SerializerMethodField()
     # content = SerializerMethodField()
 
-    # name = tours.image.name lấy ảnh trong tour hay artical?????
     def get_image(self, tours):
         request = self.context['request']
         name = tours.image.name
@@ -107,7 +106,7 @@ class ArticalSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Artical
-        fields = "__all__"
+        fields = ['id', 'title', 'image', 'author', 'content', 'likes', 'created_date']
 
 
 class CommentSerializer(ModelSerializer):
