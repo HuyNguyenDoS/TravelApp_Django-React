@@ -91,8 +91,9 @@ class Artical(models.Model):
     class Meta:
         ordering = ["-id"]
 
+    active = models.BooleanField(default=True)
     title = models.CharField(max_length=255, null=False, unique=True)
-    image = models.ImageField(upload_to='images/artical/%Y/%m', default=None)
+    image = models.ImageField(upload_to='images/artical/%Y/%m', null=True)
     author = models.CharField(max_length=100, null=True, default=None)
     content = RichTextField()
     likes = models.IntegerField(null=True, blank=True)

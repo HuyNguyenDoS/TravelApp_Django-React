@@ -227,7 +227,8 @@ class CommentViewSet(viewsets.ViewSet, generics.DestroyAPIView,
         return Response(status=status.HTTP_403_FORBIDDEN)
 
 
-class ArticalViewset(viewsets.ModelViewSet):
+class ArticalViewset(viewsets.ViewSet, generics.ListAPIView,
+                  generics.RetrieveAPIView, generics.RetrieveUpdateAPIView, generics.CreateAPIView):
     queryset = Artical.objects.all()
     serializer_class = ArticalSerializer
     pagination_class = ArticalPagination
