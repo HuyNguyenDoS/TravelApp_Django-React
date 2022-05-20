@@ -18,7 +18,7 @@ export default function AdminTour(props) {
 
     //xóa bài viết
     const deleteUser = async (articalId) => {
-        if (window.confirm("Bạn có chắc chắc xóa tin tức này?") == true) {
+        if (window.confirm("Ban muon xóa tin tức nay?") == true) {
             try {
                 await axios.delete(`http://127.0.0.1:8000/articals/${props.obj.id}/`)
                 console.log('Ban da xoa thanh cong')
