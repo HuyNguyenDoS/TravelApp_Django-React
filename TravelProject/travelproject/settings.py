@@ -114,7 +114,6 @@ ROOT_URLCONF = 'travelproject.urls'
 OAUTH2_INFO = {
     "client_id": 'XqWvUXS4u629UIHbcvwtRBW1V4RH48Jnrg34CCfq',
     "client_secret": 'ZZESTqlVRG1CRgBvVbNKvWExfjBghJwBYL8h3kVKodxxoASsorPLFWizOHlPwGPXG6vX31DIehjCvU2Fb9V0IyIdCM7Fs6s2XOtLJ6UhBe373dP6WKdZWboC4btwiNoX'
-
 }
 
 OAUTH2_PROVIDER = {
@@ -150,7 +149,7 @@ WSGI_APPLICATION = 'travelproject.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'travelappdb',
+        'NAME': 'travelappdb1',
         'USER': 'root',
         'PASSWORD': '123456',
         'HOST': ''  # mặc định localhost

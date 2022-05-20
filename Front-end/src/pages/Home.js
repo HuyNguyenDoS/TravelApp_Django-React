@@ -9,10 +9,10 @@ import Services from '../layouts/Services';
 import Footer from '../layouts/Footer';
 import ScrollToTop from '../layouts/ScrollToTop';
 import Body_Info from '../layouts/Body_Info';
-import Tour from '../pages/Tour';
 import ETourCard from '../layouts/ETourCard';
 import {GrNext,GrPrevious} from "react-icons/gr"
 import EArtical from '../layouts/EArtical';
+import IndexNavbar from '../layouts/IndexNavbar';
 
 export default function Home() {
     const [tours, setTours] = useState([])
@@ -68,9 +68,10 @@ export default function Home() {
         setPage(page + inc)
     }
 
-
+    
     return (
         <>
+            <IndexNavbar/>
             <IndexHeader />
             <h1 class="text-center text-danger" style={{padding:"20px"}} >DANH MỤC CHUYẾN ĐI</h1>
             <Row>

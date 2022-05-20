@@ -78,16 +78,20 @@ export default function IndexNavbar() {
 
         </>
         if (user !== null && user != undefined){ 
-        
-          path = <>
+          if(user.is_staff == false && user.is_superuser == false)
+          {
+              path = <>
               <div className='user-img'>
                   <Link className='img-user text-success' to='/'>
                       <img className='avt' src={'/static' + user.avatar} alt='avatar'/>{user.username}
                   </Link>
               </div>
               <Link className='nav-link text-success' to='#' onClick={logout}>Logout</Link>
-          </>
-      }
+            </>
+          }
+        }
+
+      
       //scroll To top của Trang chủ
         const [showTopBtn, setShowTopBtn] = useState(false);
         useEffect(() => {
@@ -126,6 +130,7 @@ export default function IndexNavbar() {
                   })
                   }
               </Nav>
+           
               <NavItem>
                 <NavLink  >
                  {path}
