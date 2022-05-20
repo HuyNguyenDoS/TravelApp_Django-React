@@ -9,49 +9,35 @@ class User(AbstractUser):
     avatar = models.ImageField(null=True, upload_to='users/%Y/%m')
 
 
-#login bằng email
-# class User(AbstractUser):
-#     # Delete not use field
-#     username = None
-#     last_login = None
-#     is_staff = None
-#     is_superuser = None
-#
-#     password = models.CharField(max_length=100)
-#     email = models.EmailField(max_length=100, unique=True)
-#     USERNAME_FIELD = 'email'
-#     REQUIRED_FIELDS = []
-#
-#     def __str__(self):
-#         return self.email
-#
 def upload_to(instance, filename):
     return 'posts/{filename}'.format(filename=filename)
 
 
-class Category(models.Model):
-    name = models.CharField(max_length=50,null=False, unique=True)
+class ModelBase(models.Model):
+    # name = models.CharField(max_length=255, null=False)
+    active = models.BooleanField(default=True)
+    created_date = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimeField(auto_now=True)
+    email = models.EmailField(max_length=254, null=False)
+    phone = models.CharField(max_length=255, null=False)
+    address = models.TextField(null=True, blank=True)
+
+    class Meta:
+        abstract = True
 
     def __str__(self):
         return self.name
 
 
-class ModelBase(models.Model):
-    active = models.BooleanField(default=True)
-    created_date = models.DateTimeField(auto_now_add=True)
-    updated_date = models.DateTimeField(auto_now=True)
-
+# model nhân viên
+class Staff(ModelBase):
     class Meta:
-        abstract = True
+        unique_together = ('email', 'phone', 'avatar')
 
-
-class Department(ModelBase):
-    name_department = models.CharField(max_length=50)
-    address = models.TextField()
-    phone = models.TextField()
+    avatar = models.ImageField(upload_to='images/avatars/%Y/%m', null=True, default=None)
 
     def __str__(self):
-        return self.name_department
+        return self.name
 
 
 class TourGuide(ModelBase):
@@ -60,127 +46,154 @@ class TourGuide(ModelBase):
     phone = models.TextField
     imageTourGuide = models.ImageField(null=True, blank=True, upload_to='imageTourGuide/%Y/%m')
 
-    department = models.ForeignKey(Department, related_name="Department", null=True, on_delete=models.SET_NULL)
-
     def __str__(self):
         return self.name_tourguide
 
 
 class Tour(ModelBase):
-    name_tour = models.TextField()
-    address = models.TextField()
-    phone = models.TextField()
+    name_tour = models.CharField(max_length=255, null=False)
+    plan_tour = RichTextField(default=None, null=True)
+    description = RichTextField(default=None, null=True)
+    banner = models.ImageField(upload_to='imageBanner/%Y/%m', default=None)
+    quantity = models.IntegerField(default=0, null=True)
+
+    departure = models.CharField(max_length=255, null=True)
+    depart_date = models.DateField(null=True, blank=True)
+    duration = models.CharField(max_length=50, null=True)
+
+    price_of_tour = models.FloatField(null=False, blank=False)
+    price_of_tour_child = models.FloatField(null=False, default=0)
+    price_of_room = models.FloatField(null=False, blank=False)
+
+    rating = models.FloatField(null=True, blank=True)
+
     imageTour = models.ImageField(null=True, blank=True, upload_to='imageTour/%Y/%m')
-    price = models.IntegerField(default=0)
 
     tourguide = models.ForeignKey(TourGuide, related_name="Tour", null=True, on_delete=models.SET_NULL)
-    customers = models.ManyToManyField('Customer')
-    hotels = models.ManyToManyField('Hotel',null= True)
-    transports = models.ManyToManyField('Transport')
-    arrivals = models.ManyToManyField('Arrival',null=True)
+    category = models.ForeignKey('Category', related_name='tours', null=True, on_delete=models.SET_NULL)
 
-    category = models.ForeignKey(Category, related_name='tours', null=True, on_delete=models.SET_NULL)
+    class Meta:
+        unique_together = ('name_tour', 'category')
+        ordering = ["-id"]
 
     def __str__(self):
         return self.name_tour
 
 
-
-class Ticket(ModelBase):
-    name_ticket = models.TextField()
-
-class Ticket(ModelBase):
-    name_ticket = models.TextField()
-
-    department = models.ForeignKey(Department, related_name="department", null=True, on_delete=models.CASCADE)
-    tour = models.ForeignKey(Tour, related_name="tour", null=True, on_delete=models.SET_NULL)
-    customers = models.ManyToManyField('Customer')
+class Category(models.Model):
+    name = models.CharField(max_length=50, null=False, unique=True)
 
     def __str__(self):
-        return self.name_ticket
+        return self.name
 
 
-class Customer(ModelBase):
-    name_customer = models.TextField()
-    address = models.TextField()
-    iden = models.CharField(max_length=10)
+class Artical(models.Model):
+    class Meta:
+        ordering = ["-id"]
 
-    def __str__(self):
-        return self.name_customer
-
-class Hotel(ModelBase):
-    name_hotel = models.TextField()
-    address = models.TextField()
-
-    def __str__(self):
-        return self.name_hotel
-
-
-class Transport(ModelBase):
-    name_transport = models.TextField()
-    seat = models.IntegerField()
+    title = models.CharField(max_length=255, null=False, unique=True)
+    image = models.ImageField(upload_to='images/artical/%Y/%m', default=None)
+    author = models.CharField(max_length=100, null=True, default=None)
+    content = RichTextField()
+    likes = models.IntegerField(null=True, blank=True)
+    created_date = models.DateTimeField(auto_now_add=True)
+    active = models.BooleanField(default=True)
 
     def __str__(self):
-        return self.name_transport
+        return "%s - Ngày tạo: %s" % (self.title, self.created_date.strftime("%Y-%m-%d"))
 
 
-class Arrival(ModelBase):
-    name_arrival = models.TextField()
-    address = models.TextField()
+# comment cho bài viết và tour
+class Comment(models.Model):
+    class Meta:
+        ordering = ["-id"]
 
-    hotel = models.ForeignKey(Hotel, related_name="hotel", null=True, on_delete=models.SET_NULL)
+    content = RichTextField()
+    created_date = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(User, related_name="comments", on_delete=models.CASCADE, null=True)
+    artical = models.ForeignKey(Artical, related_name="commentsArtical", on_delete=models.CASCADE, null=True)
+    tour = models.ForeignKey(Tour, related_name="commentsTour", on_delete=models.CASCADE, null=True)
 
-    def __str__(self):
-        return self.name_arrival
 
-
+# action, like, rating, view
 class ActionBase(models.Model):
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
-    tour = models.ForeignKey(Tour, on_delete=models.CASCADE)
-    creator = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     class Meta:
         abstract = True
 
 
-class TourView(ModelBase):
-    views = models.IntegerField(default=0)
-    tour = models.OneToOneField(Tour, on_delete=models.CASCADE)
+class Rating(ActionBase):
+    rate = models.PositiveSmallIntegerField(default=0)
+    tour = models.ForeignKey(Tour, related_name="ratings", on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ("tour", "user")
+        ordering = ["-id"]
 
 
 class Action(ActionBase):
-    LIKE, HAHA, HEART = range(3)
+    LIKE, NOT_LIKE = range(2)
     ACTIONS = [
-        (LIKE, 'like'),
-        (HAHA, 'haha'),
-        (HEART, 'heart')
-
+        (LIKE, 'Like'),
+        (NOT_LIKE, 'Not like'),
     ]
     type = models.PositiveSmallIntegerField(choices=ACTIONS, default=LIKE)
+    artical = models.ForeignKey(Artical, related_name="actions", on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ("artical", "user")
 
 
-class Rating(ActionBase):
-    rate = models.PositiveSmallIntegerField(default=0)
+# Thông tin khách hàng
+class Customer(ModelBase):
+    class Meta:
+        ordering = ["-id"]
 
-
-class Article(ModelBase):
-    topic = models.TextField()
-    content = models.TextField()
-    image_Artical = models.ImageField(null=True, upload_to='imageArtical/%Y/%m')
+    ADULT, CHILD = range(2)
+    AGES = [
+        (ADULT, 'adult'),
+        (CHILD, 'child')
+    ]
+    avatar = models.ImageField(upload_to='customerAvatar/%Y/%m', null=True, default=None)
+    age = models.PositiveSmallIntegerField(choices=AGES, default=ADULT)
+    payment = models.ForeignKey('Payment', related_name='customers', on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
-        return self.topic
+        return self.name_customer
 
 
-class Comment(ModelBase):
-    content = models.TextField()
-    tour = models.ForeignKey(Tour, related_name='comments', on_delete=models.CASCADE,null=True)
-    artical = models.ForeignKey(Article, related_name='comments', on_delete=models.CASCADE,default="0",null=True)
-    creator = models.ForeignKey(User, on_delete=models.CASCADE)
+# Thanh toán online
+class Payment(models.Model):
+    class Meta:
+        ordering = ["-id"]
+
+    name = models.CharField(max_length=255, null=False)
+    email = models.EmailField(max_length=254, null=False)
+    phone = models.CharField(max_length=255, null=False)
+    address = models.TextField(null=True, blank=True)
 
     def __str__(self):
-        return self.content
+        return self.name
 
 
+class Invoice(models.Model):
+    class Meta:
+        ordering = ["-id"]
 
+    WAITING, COMPLETED = range(2)
+    STATUS_PAYMENT = [
+        (WAITING, 'waiting'),
+        (COMPLETED, 'completed')
+    ]
+    total_amount = models.FloatField(null=True, blank=True)
+    created_date = models.DateTimeField(auto_now_add=True)
+    note = models.TextField(null=True, blank=True)
+    status_payment = models.PositiveSmallIntegerField(choices=STATUS_PAYMENT, default=WAITING)
+    tour = models.ForeignKey('Tour', related_name='invoices', null=True, on_delete=models.SET_NULL)
+    payment = models.ForeignKey('Payment', related_name='invoices', on_delete=models.SET_NULL, null=True)
+
+    def __str__(self):
+        return "Mã hóa đơn %s - Ngày tạo: %s" % (str(self.id), self.created_date.strftime("%Y-%m-%d"))

@@ -7,13 +7,11 @@ router.register(prefix='users', viewset=views.UserViewSet, basename='user')
 router.register("categories", views.CategoryViewSet, 'category')
 router.register(prefix='tours', viewset=views.TourViewSet, basename='tour')
 router.register("comments", views.CommentViewSet, 'comment')
-router.register(prefix='departments', viewset=views.DepartmentViewSet, basename='department')
 router.register(prefix='tourguides', viewset=views.TourguideViewSet, basename='tourguide')
-router.register(prefix='hotels', viewset=views.HotelViewSet, basename='hotel')
-router.register(prefix='arrivals', viewset=views.ArrivalViewSet, basename='arrival')
-
-#bai viet
+# router.register(prefix='AdminStatTourView', viewset=views.AdminStatTourView, basename='adminstattour')
 router.register(prefix='articals', viewset=views.ArticalViewset, basename='artical')
+router.register(prefix='customers', viewset=views.CustomerViewSet, basename='customer')
+router.register(prefix='payments', viewset=views.PaymentViewSet, basename='payment')
 
 urlpatterns = [
     path('', include(router.urls)),

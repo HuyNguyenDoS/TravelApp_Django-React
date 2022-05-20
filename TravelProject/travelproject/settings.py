@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'drf_social_oauth2',# login facebook
     'ckeditor',
     'ckeditor_uploader',
+    'social.apps.django_app.default',
 ]
 
 CKEDITOR_UPLOAD_PATH = "images/ckeditor/"
@@ -77,6 +78,7 @@ AUTHENTICATION_BACKENDS = (
 # Facebook configuration
 SOCIAL_AUTH_FACEBOOK_KEY = '<your app id goes here>'
 SOCIAL_AUTH_FACEBOOK_SECRET = '<your app secret goes here>'
+SOCIAL_AUTH_FACEBOOK_SCOPE = ['email']
 
 # Define SOCIAL_AUTH_FACEBOOK_SCOPE to get extra permissions from Facebook.
 # Email is not sent by default, to get it, you must request the email permission.
@@ -95,6 +97,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+
+    'social_django.middleware.SocialAuthExceptionMiddleware'
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
@@ -108,17 +112,13 @@ INTERNAL_IPS = [
 ROOT_URLCONF = 'travelproject.urls'
 
 OAUTH2_INFO = {
-
-    "client_id": 'OSjT4diqTdUKH8VfWBkkytBDI8MKMLh7jwcUpCi8',
-    "client_secret": 'W3YspZskopt9Sq2OT5eEt9wB54Y4J6QCuNMsKIjOcPGo9uqFcHfus1KR6XPCsIxptOq5Kdw6zjgiGenoEuLAsoBMOmOMTnWUh7Q8V1lQQFZC5iDQb7WQzOdXkUPiXLce'
+    "client_id": 'XqWvUXS4u629UIHbcvwtRBW1V4RH48Jnrg34CCfq',
+    "client_secret": 'ZZESTqlVRG1CRgBvVbNKvWExfjBghJwBYL8h3kVKodxxoASsorPLFWizOHlPwGPXG6vX31DIehjCvU2Fb9V0IyIdCM7Fs6s2XOtLJ6UhBe373dP6WKdZWboC4btwiNoX'
 }
 
-
+OAUTH2_PROVIDER = {
+    'OAUTH2_BACKEND_CLASS': 'oauth2_provider.oauth2_backends.JSONOAuthLibCore'
 }
-
-# OAUTH2_PROVIDER = {
-#     'OAUTH2_BACKEND_CLASS': 'oauth2_provider.oauth2_backends.JSONOAuthLibCore'
-# }
 
 TEMPLATES = [
     {
@@ -151,7 +151,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'travelappdb1',
         'USER': 'root',
-        'PASSWORD': '123456789',
+        'PASSWORD': '123456',
         'HOST': ''  # mặc định localhost
     }
 }
