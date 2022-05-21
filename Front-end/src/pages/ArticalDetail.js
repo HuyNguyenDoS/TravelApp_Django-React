@@ -5,8 +5,8 @@ import Apis, { endpoints } from '../configs/Apis'
 import Moment from 'react-moment';
 import { useSelector } from 'react-redux';
 import cookies from 'react-cookies';
-import IndexNavbar from '../layouts/IndexNavbar';
-import IndexHeader from '../layouts/IndexHeader';
+import IndexNavbar from '../components/IndexNarbar';
+import IndexHeader from '../components/IndexHeader';
 
 
 export default function ArticalDetail() {

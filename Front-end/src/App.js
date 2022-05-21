@@ -1,9 +1,7 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
-import Body from './layouts/Body';
-import { Container } from 'react-bootstrap';
+import Body from './components/Body'
 import './App.css';
 import React from "react";
-
 
 
 function App() {
