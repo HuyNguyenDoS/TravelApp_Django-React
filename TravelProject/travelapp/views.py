@@ -93,7 +93,7 @@ class TourViewSet(viewsets.ModelViewSet):
         except IndexError | ValueError:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         else:
-            r = Rating.objects.update_or_create(creator=request.user,
+            r = Rating.objects.update_or_create(user=request.user,
                                                 tour=self.get_object(),
                                                 defaults={"rate": rating})
 
@@ -106,7 +106,7 @@ class TourViewSet(viewsets.ModelViewSet):
         if content:
             c = Comment.objects.create(content=content,
                                        tour=self.get_object(),
-                                       creator=request.user)
+                                       user=request.user)
 
             return Response(CommentSerializer(c, context={"request": request}).data,
                             status=status.HTTP_201_CREATED)
@@ -120,7 +120,6 @@ class TourViewSet(viewsets.ModelViewSet):
 
         return Response(CommentSerializer(comments, many=True).data,
                         status=status.HTTP_200_OK)
-
 
     @swagger_auto_schema(
         operation_description='Get the comments of a tour',
@@ -136,7 +135,7 @@ class TourViewSet(viewsets.ModelViewSet):
             return Response(status=status.HTTP_400_BAD_REQUEST)
         else:
             action = Action.objects.create(type=action_type,
-                                           creator=request.user,
+                                           user=request.user,
                                            tour=self.get_object())
 
             return Response(ActionSerializer(action).data,
@@ -216,20 +215,20 @@ class CommentViewSet(viewsets.ViewSet, generics.DestroyAPIView,
     permission_classes = [permissions.IsAuthenticated]
 
     def destroy(self, request, *args, **kwargs):
-        if request.user == self.get_object().creator:
+        if request.user == self.get_object().user:
             return super().destroy(request, *args, **kwargs)
 
         return Response(status=status.HTTP_403_FORBIDDEN)
 
     def partial_update(self, request, *args, **kwargs):
-        if request.user == self.get_object().creator:
+        if request.user == self.get_object().user:
             return super().partial_update(request, *args, **kwargs)
 
         return Response(status=status.HTTP_403_FORBIDDEN)
 
 
 class ArticalViewset(viewsets.ViewSet, generics.ListAPIView,
-                  generics.RetrieveAPIView, generics.RetrieveUpdateAPIView, generics.CreateAPIView):
+                     generics.RetrieveAPIView, generics.RetrieveUpdateAPIView, generics.CreateAPIView):
     queryset = Artical.objects.all()
     serializer_class = ArticalSerializer
     pagination_class = ArticalPagination
@@ -256,7 +255,7 @@ class ArticalViewset(viewsets.ViewSet, generics.ListAPIView,
             return Response(status=status.HTTP_400_BAD_REQUEST)
         else:
             action = Action.objects.create(type=action_type,
-                                           creator=request.user,
+                                           user=request.user,
                                            artical=self.get_object())
 
             return Response(ActionSerializer(action).data,
@@ -268,7 +267,7 @@ class ArticalViewset(viewsets.ViewSet, generics.ListAPIView,
         if content:
             c = Comment.objects.create(content=content,
                                        artical=self.get_object(),
-                                       creator=request.user)
+                                       user=request.user)
 
             return Response(CommentSerializer(c, context={"request": request}).data,
                             status=status.HTTP_201_CREATED)
@@ -286,9 +285,9 @@ class ArticalViewset(viewsets.ViewSet, generics.ListAPIView,
         return list_artical
 
 
-class PaymentViewSet(viewsets.ViewSet, generics.CreateAPIView, generics.RetrieveAPIView):
-    serializer_class = PaymentSerializer
-    queryset = Payment.objects.all()
+class PayerViewSet(viewsets.ViewSet, generics.CreateAPIView, generics.RetrieveAPIView):
+    serializer_class = PayerSerializer
+    queryset = Payer.objects.all()
 
     @action(methods=['post'], detail=True, url_path="add-customer")
     def add_customer(self, request, pk):
@@ -317,10 +316,10 @@ class PaymentViewSet(viewsets.ViewSet, generics.CreateAPIView, generics.Retrieve
         tour_id = request.data.get('tour_id')
         tour = Tour.objects.get(pk=tour_id)
         note = request.data.get('note')
-        status_payment = request.data.get('status_payment')
+        status_payer = request.data.get('status_payer')
 
         if total_amount:
-            inv = Invoice.objects.create(total_amount=total_amount, note=note, status_payment=status_payment,
+            inv = Invoice.objects.create(total_amount=total_amount, note=note, status_payer=status_payer,
                                          payer=self.get_object(), tour=tour)
 
             return Response(InvoiceSerializer(inv).data,

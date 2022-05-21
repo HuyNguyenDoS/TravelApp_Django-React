@@ -11,7 +11,7 @@ router.register(prefix='tourguides', viewset=views.TourguideViewSet, basename='t
 # router.register(prefix='AdminStatTourView', viewset=views.AdminStatTourView, basename='adminstattour')
 router.register(prefix='articals', viewset=views.ArticalViewset, basename='artical')
 router.register(prefix='customers', viewset=views.CustomerViewSet, basename='customer')
-router.register(prefix='payments', viewset=views.PaymentViewSet, basename='payment')
+router.register(prefix='payers', viewset=views.PayerViewSet, basename='payer')
 
 urlpatterns = [
     path('', include(router.urls)),

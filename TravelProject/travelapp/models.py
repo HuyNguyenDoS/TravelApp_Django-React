@@ -161,14 +161,14 @@ class Customer(ModelBase):
     ]
     avatar = models.ImageField(upload_to='customerAvatar/%Y/%m', null=True, default=None)
     age = models.PositiveSmallIntegerField(choices=AGES, default=ADULT)
-    payment = models.ForeignKey('Payment', related_name='customers', on_delete=models.SET_NULL, null=True)
+    payer = models.ForeignKey('Payer', related_name='customers', on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
         return self.name_customer
 
 
 # Thanh toán online
-class Payment(models.Model):
+class Payer(models.Model):
     class Meta:
         ordering = ["-id"]
 
@@ -195,7 +195,7 @@ class Invoice(models.Model):
     note = models.TextField(null=True, blank=True)
     status_payment = models.PositiveSmallIntegerField(choices=STATUS_PAYMENT, default=WAITING)
     tour = models.ForeignKey('Tour', related_name='invoices', null=True, on_delete=models.SET_NULL)
-    payment = models.ForeignKey('Payment', related_name='invoices', on_delete=models.SET_NULL, null=True)
+    payer = models.ForeignKey('Payer', related_name='invoices', on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
         return "Mã hóa đơn %s - Ngày tạo: %s" % (str(self.id), self.created_date.strftime("%Y-%m-%d"))

@@ -40,9 +40,9 @@ class CustomerSerializer(ModelSerializer):
         fields = '__all__'
 
 
-class PaymentSerializer(ModelSerializer):
+class PayerSerializer(ModelSerializer):
     class Meta:
-        model = Payment
+        model = Payer
         fields = '__all__'
 
 
@@ -110,9 +110,9 @@ class ArticalSerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(ModelSerializer):
-    creator = SerializerMethodField()
+    user = SerializerMethodField()
 
-    def get_creator(self, comment):
+    def get_user(self, comment):
         return UserSerializer(comment.user, context={"request": self.context.get('request')}).data
 
     class Meta:
