@@ -116,10 +116,11 @@ class TourViewSet(viewsets.ModelViewSet):
     @action(methods=['get'], url_path='comments', detail=True)
     def get_comments(self, request, pk):
         tour = self.get_object()
-        comments = tour.comments.select_related('creatorTour').filter(active=True)
+        comments = tour.comments.select_related('user').filter(active=True)
 
         return Response(CommentSerializer(comments, many=True).data,
                         status=status.HTTP_200_OK)
+
 
     @swagger_auto_schema(
         operation_description='Get the comments of a tour',
@@ -239,10 +240,11 @@ class ArticalViewset(viewsets.ViewSet, generics.ListAPIView,
 
         return [permissions.AllowAny()]
 
-    @action(methods=['get'], detail=True, url_path="comments")
+    @action(methods=['get'], url_path='comments', detail=True)
     def get_comments(self, request, pk):
-        artical = self.get_object()
-        comments = artical.comments.select_related('creatorArtical').filter(active=True)
+        tour = self.get_object()
+        comments = tour.comments.select_related('user').filter(active=True)
+
         return Response(CommentSerializer(comments, many=True).data,
                         status=status.HTTP_200_OK)
 

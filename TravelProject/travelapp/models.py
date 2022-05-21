@@ -109,11 +109,12 @@ class Comment(models.Model):
     class Meta:
         ordering = ["-id"]
 
+    active = models.BooleanField(default=True)
     content = RichTextField()
     created_date = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(User, related_name="comments", on_delete=models.CASCADE, null=True)
-    artical = models.ForeignKey(Artical, related_name="commentsArtical", on_delete=models.CASCADE, null=True)
-    tour = models.ForeignKey(Tour, related_name="commentsTour", on_delete=models.CASCADE, null=True)
+    artical = models.ForeignKey(Artical, related_name="comments", on_delete=models.CASCADE, null=True)
+    tour = models.ForeignKey(Tour, related_name="comments", on_delete=models.CASCADE, null=True)
 
 
 # action, like, rating, view
