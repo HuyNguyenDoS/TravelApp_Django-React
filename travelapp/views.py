@@ -73,7 +73,7 @@ class TourViewSet(viewsets.ModelViewSet):
 
         return [permissions.AllowAny()]
 
-    @action(methods=['post'], detail=True, url_path='update_quantity')
+    @action(methods=['post'], detail=True, url_path='update-slots')
     def update_quantity(self, request, pk):
         try:
             count = int(request.data['count'])
@@ -227,7 +227,7 @@ class CommentViewSet(viewsets.ViewSet, generics.DestroyAPIView,
         return Response(status=status.HTTP_403_FORBIDDEN)
 
 
-class ArticalViewset(viewsets.ViewSet, generics.ListAPIView,
+class ArticalViewset(viewsets.ViewSet, generics.ListAPIView, generics.DestroyAPIView,
                      generics.RetrieveAPIView, generics.RetrieveUpdateAPIView, generics.CreateAPIView):
     queryset = Artical.objects.all()
     serializer_class = ArticalSerializer

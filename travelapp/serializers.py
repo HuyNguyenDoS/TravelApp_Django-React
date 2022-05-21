@@ -97,10 +97,7 @@ class ArticalSerializer(serializers.ModelSerializer):
     def get_image(self, tours):
         request = self.context['request']
         name = tours.image.name
-        if name.startswith('static/'):
-            path = '/%s' % name
-        else:
-            path = '/static/%s' % name
+        path = '/static/%s' % name
 
         return request.build_absolute_uri(path)
 

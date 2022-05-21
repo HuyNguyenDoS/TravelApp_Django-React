@@ -55,7 +55,7 @@ class Tour(ModelBase):
     plan_tour = RichTextField(default=None, null=True)
     description = RichTextField(default=None, null=True)
     banner = models.ImageField(upload_to='imageBanner/%Y/%m', default=None)
-    quantity = models.IntegerField(default=0, null=True)
+    slot = models.IntegerField(default=0, null=True)
 
     departure = models.CharField(max_length=255, null=True)
     depart_date = models.DateField(null=True, blank=True)
