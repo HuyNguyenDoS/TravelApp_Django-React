@@ -116,9 +116,9 @@ OAUTH2_INFO = {
     "client_secret": 'ZZESTqlVRG1CRgBvVbNKvWExfjBghJwBYL8h3kVKodxxoASsorPLFWizOHlPwGPXG6vX31DIehjCvU2Fb9V0IyIdCM7Fs6s2XOtLJ6UhBe373dP6WKdZWboC4btwiNoX'
 }
 
-OAUTH2_PROVIDER = {
-    'OAUTH2_BACKEND_CLASS': 'oauth2_provider.oauth2_backends.JSONOAuthLibCore'
-}
+# OAUTH2_PROVIDER = {
+#     'OAUTH2_BACKEND_CLASS': 'oauth2_provider.oauth2_backends.JSONOAuthLibCore'
+# }
 
 TEMPLATES = [
     {
