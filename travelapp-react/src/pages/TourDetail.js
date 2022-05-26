@@ -1,159 +1,324 @@
-import Apis, { endpoints } from '../configs/Apis'
-import React, { useEffect, useState } from 'react'
-import { Badge, Col, Container, Form, Image, Row, Spinner } from 'react-bootstrap'
-import { useParams, Link } from 'react-router-dom'
-import { useSelector } from 'react-redux';
-import cookies from 'react-cookies';
-import { Button } from 'bootstrap';
-import IndexNavbar from '../layouts/IndexNavbar';
-import IndexHeader from '../layouts/IndexHeader';
-import Rating from "react-rating";
-import Moment from 'react-moment';
+import React, { useEffect, useState } from "react";
+import { useParams } from 'react-router-dom'
+import API, { endpoints } from '../configs/Apis';
+import cookies from 'react-cookies'
+import WOW from 'wowjs';
+import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
+import { Avatar, Rating } from "@mui/material";
+import NumberFormat from 'react-number-format';
+import advice1 from "../static/image/advice/advice-1.jpg"
+import PreLoader from "../components/PreLoader"
+import MessageSnackbar from "../components/MessageSnackbar";
+import Header from '../components/Header';
 
 export default function TourDetail() {
-  const [tour, setTour] = useState(null)
-  let { tourId } = useParams()
-  const [comments, setComments] = useState([])
-  const [commentContent, setCommentContent] = useState(null)
-  const [rating, setRating] = useState(0)
-  const [changed, setChanged] = useState(1)
-  let user = useSelector(state => state.user.user)
-  
+    const [tour, setTour] = useState([])
+    const [services, setServices] = useState([])
 
-  useEffect(() => {
-    let loadTourDetail = async () => {
-      try {
-          let res = await Apis.get(endpoints["tour-detail"](tourId), {
-              headers: {
-                  "Authorization": `Bearer ${cookies.load("access_token")}`
-              }
-          }
-          )
-          setTour(res.data)
-          setRating(res.data.rate)
-      } catch (err) {
-          console.error(err)
-      }
-  }
+    const [rating, setRating] = useState(0)
 
-    let loadComments = async () => {
-          try {
-              let res = await Apis.get(endpoints['comments'](tourId))
-              setComments(res.data)
-          } catch (err) {
-              console.error(err)
-          }
-      }
-      
-    loadComments()
-    loadTourDetail()
-    
-  }, [changed])
+    const [comment, setComment] = useState("")
+    const [listComment, setListComment] = useState([])
+    const [commentChange, setCommentChange] = useState(0)
 
+    const { tourId } = useParams()
 
-  const addComment = async (event) => {
-    event.preventDefault()
+    let user = useSelector(state => state.user.user)
 
-    try {
-        let res = await Apis.post(endpoints['add-comment'](tourId), {
-            "content": commentContent
-        }, {
-            headers: {
-                "Authorization": `Bearer ${cookies.load("access_token")}`
+    // State of message
+    const [open, setOpen] = React.useState(false);
+    const [msg, setMsg] = useState('')
+    const [typeMsg, setTypeMsg] = useState('')
+    const [titleMsg, setTitleMsg] = useState('')
+
+    const handleMessageClose = () => {
+        setOpen(false);
+    };
+
+    const createMessage = (title, msg, type) => {
+        setMsg(msg)
+        setTitleMsg(title)
+        setTypeMsg(type)
+    }
+    // End message
+
+    useEffect(() => {
+        new WOW.WOW({live: false}).init();
+    }, [])
+
+    useEffect(() => {
+        let getTour = async() => {
+            try {
+                let res = await API.get(endpoints['tour-details'](tourId), {
+                    headers: {
+                        'Authorization': `Bearer ${cookies.load('access_token')}`
+                    }
+                })
+                setServices(res.data.service)
+                setTour(res.data)
+                setRating(res.data.rate)
+            } catch (error) {
+                console.error(error)
             }
-        })
+        }
 
-        console.info(res.data)
-        comments.push(res.data)
-        setComments(comments)
-        setChanged(comments.length)
-        setCommentContent('')
-    } catch (err) {
-        console.error(err)
+        let getComments = async() => {
+            try {
+                let res = await API.get(endpoints['tour-comments'](tourId))
+                setListComment(res.data)
+            } catch (error) {
+                console.error(error)
+            }
+        }
+        getComments()
+        getTour()
+    }, [tourId, commentChange])
+
+    /* Handle Comment Function */
+    const handleChange = (event) => {
+        setComment(event.target.value)
     }
 
-}
-
-  const saveRating = async (rate) => {
-    if (window.confirm("Ban muon danh gia bai hoc nay?") == true) {
-        try {
-            let res = await Apis.post(endpoints['rating'](tourId), {
-                "rating": rate
-            }, {
-                headers: {
-                    "Authorization": `Bearer ${cookies.load("access_token")}`
+    const addRating = async (event, newValue) => {
+        if (user != null) {
+            if (window.confirm("Bạn xác nhận đánh giá tour này ?") === true) {
+                try {
+                    let res = await API.post(endpoints['rating'](tourId), {
+                        "rating": newValue
+                    }, {
+                        headers: {
+                            'Authorization': `Bearer ${cookies.load('access_token')}`
+                        }
+                    })
+                    if (res.status === 200 || res.status === 201) {
+                        setOpen(true)
+                        createMessage('Thành công', 'Đánh giá tour thành công !', 'success')
+                        setRating(newValue);
+                    }
+                } catch (error) {
+                    setOpen(true)
+                    createMessage('Lỗi', 'Đánh giá tour thất bại !', 'error')
+                    console.error(error)
                 }
-            })
-            console.info(res.data)
-        } catch (err) {
-            console.error(err)
+            }
+        } else {
+            setOpen(true)
+            createMessage('Cảnh báo', 'Hãy đăng nhập để có thể đánh giá !', 'warning')
         }
     }
+    
+
+    const addComment = async (event) => {
+        event.preventDefault()
+        if (user != null) {
+            try {
+                let res = await API.post(endpoints['add-comment-tour'](tourId), {
+                    "content": comment
+                }, {
+                    headers: {
+                        'Authorization': `Bearer ${cookies.load('access_token')}`
+                    }
+                })
+                
+                if (res.status === 201) {
+                    listComment.push(res.data)
+                    setListComment(listComment)
+                    setCommentChange(listComment.length)
+                    setComment('')
+
+                    setOpen(true)
+                    createMessage('Thành công', 'Đăng bình luận tour thành công !', 'success')
+                }
+            } catch (error) {
+                console.error(error)
+                setOpen(true)
+                createMessage('Lỗi', 'Đăng bình luận tour thất bại !', 'error')
+            }
+        }
+        else {
+            setOpen(true)
+            createMessage('Cảnh báo', 'Hãy đăng nhập để có thể bình luận !', 'warning')
+        }
+    }
+    /* End Comment Function */
+    if (tour.length === 0) {
+        return <PreLoader />
+    }
+
+    return (
+        <>
+        <Header/>
+            <section className="page-title style-three" style={{ backgroundImage: `url(${tour.imageTour})` }}>
+                <div className="auto-container">
+                    <div className="inner-box wow fadeInDown animated animated" data-wow-delay="00ms" data-wow-duration="1500ms">
+                        <div className="rating"><span><i className="fas fa-star"></i>{tour.rating}</span></div>
+                        <h2 style={{ width: "750px" }}>{tour.tour_name}</h2>
+                        <h3 >
+                        <NumberFormat
+                            value={tour.price_of_tour}
+                            displayType={'text'}
+                            thousandSeparator={true}
+                            // prefix={'$'}
+                            style={{color:'orange',fontSize:'50px'}}
+                            />đ / 1 người
+                        </h3>    
+                    </div>
+                </div>
+            </section>
+
+            <section className="tour-details">
+                <div className="auto-container">
+                    <div className="row clearfix">
+                        <div className="col-lg-8 col-md-12 col-sm-12 content-side">
+                            <div className="tour-details-content">
+                                <div className="inner-box">
+                                    <div className="text">
+                                        <h2>Mô tả</h2>
+                                        <p dangerouslySetInnerHTML={{__html: `${tour.description}`}} />
+                                        <ul className="info-list clearfix">
+                                            <li><i className="far fa-clock"></i>{tour.duration}</li>
+                                            <li><i className="far fa-user"></i>Đang cập nhật</li>
+                                            <li><i className="far fa-map"></i>Đang cập nhật</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div className="overview-inner">
+                                    <ul className="overview-list clearfix">
+                                        <li><span>Còn:</span>{tour.slots} xuất</li>
+                                        <li><span>Điểm khởi hành:</span>{tour.departure}</li>
+                                        <li><span>Thời gian khởi hành:</span>{tour.depart_date}</li>
+                                    </ul>
+                                </div>
+                                <div className="tour-plan">
+                                    <div className="text">
+                                        <h2>Kế hoạch tour</h2>
+                                        <p dangerouslySetInnerHTML={{__html: `${tour.plan_tour}`}} />
+                                    </div>
+                                </div>
+                                {/* <div className="photo-gallery">
+                                    <div className="text">
+                                        <Link className="photo-gallery-link" to={"/tour-detail/" + tourId + "/gallery"}>
+                                            Bộ sưu tập ảnh <span> </span>
+                                            <i className="fas fa-arrow-right"></i>
+                                        </Link>
+                                    </div>
+                                </div> */}
+                                <div className="comment-box">
+                                    <div className="text">
+                                        <h2>Đánh giá</h2>
+                                        <Rating name="simple-controlled"
+                                        size="large"
+                                        value={rating}
+                                        onChange={addRating}
+                                        />
+                                    </div>
+                                    <div>
+                                    <form onSubmit={addComment} className="comment-form">
+                                        <div className="row clearfix">
+                                            <div className="col-lg-12 col-md-12 col-sm-12 form-group">
+                                                <textarea placeholder="Nội dung" value={comment} 
+                                                    onChange={(event) => handleChange(event)}/>
+                                            </div>
+                                            <div className="col-lg-12 col-md-12 col-sm-12 form-group message-btn">
+                                                <button type="submit" className="theme-btn">Gửi</button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                    </div>
+                                    <hr />
+                                    <div className="group-title">
+                                        <h2>{listComment.length} Bình luận</h2>
+                                    </div>
+
+                                    <div className="comment-box-content">
+                                        {listComment.map(c => <CommentItem key={c.id} comment={c} />)}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="col-lg-4 col-md-12 col-sm-12 sidebar-side">
+                            <div className="default-sidebar tour-sidebar ml-20">
+                                <div className="sidebar-widget downloads-widget">
+                                    <div className="form-widget">
+                                        <div className="widget-title">
+                                            <h3>Đặt Tour</h3>
+                                        </div>
+                                        <Link to={"/tour-detail/" + tourId + "/booking-1"} style={{ color: "#fff" }}>
+                                            <button type="submit" className="theme-btn">Nhấn vào đây</button>
+                                        </Link>
+                                    </div>
+                                    <div className="widget-title">
+                                        <h3>Tải xuống</h3>
+                                    </div>
+                                    <div className="widget-content">
+                                        <ul className="download-links clearfix">
+                                            <li>
+                                                <Link to="/">Hướng dẫn
+                                                    <i className="fas fa-download"></i>
+                                                </Link>
+                                            </li>
+                                            <li>
+                                                <Link to="/">Tài liệu du lịch
+                                                    <i className="fas fa-download"></i>
+                                                </Link>
+                                            </li>
+                                            <li>
+                                                <Link to="/">Logo & Nội dung
+                                                    <i className="fas fa-download"></i>
+                                                </Link>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div className="advice-widget">
+                                    <div className="inner-box"
+                                        style={{ backgroundImage: `url(${advice1})` }}>
+                                        <div className="text">
+                                            <h2>Get <br />25% Off <br />On New York Tours</h2>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <MessageSnackbar
+                handleClose={handleMessageClose}
+                isOpen={open}
+                msg={msg}
+                type={typeMsg}
+                title={titleMsg}
+            />
+        </>
+    )
 }
+function CommentItem(props)  {
 
-
-
-if (tour === null)
-  return <Spinner animation='border'/>
-
-  let comment = <em><Link to='/login'> Đăng nhập </Link> để hình luận </em>
-  let r = ""
-  if (user !== null && user !== undefined) {
-    comment =  <Form onSubmit={addComment} >
-                  <Form.Group className="mb-3" controlId="comentContent">
-                    <Form.Control as="textarea" 
-                                  value={commentContent}
-                                  onChange={(event) => setCommentContent(event.target.value)}
-                                  placeholder='Nhập nội dung bình luận' rows={3}
-                                   />
-                  </Form.Group>
-                  <button type='submit'>Thêm bình luận</button>
-              </Form>
-  r = <Rating  
-      emptySymbol={<img src={require("../assets/img/star-empty.png")} className="icon" />}
-      fullSymbol={<img src={require("../assets/img/star-yellow.png")} className="icon" />} 
-      initialRating={rating} onClick={saveRating} 
-    />
-}
-
-return (
-  <>
-    <IndexNavbar/>
-    <IndexHeader/>
-    <h1 className='text-success'>TourDetail</h1>
-    <Row>
-          <Col md={4} xs={12}>
-            <Image src={tour.imageTour} style={{width:'500px', height: '557px'}} rounded fluid />
-          </Col>
-          <Col md={8} xs={12}>
-            <h2>{tour.name_tour}</h2>
-            <p>Ngày tạo: {tour.created_date}</p>
-            <p>Ngày cập nhật: {tour.updated_date}</p>
-            {/* <p>
-                {tour.tags.map(t => <Badge bg='secondary'>{t.name}</Badge>)}
-            </p> */}
-            <p>
-              {r}
-            </p>
-          </Col>
-      </Row>
-      <hr />
-      {/* <div>
-         {arrival.content}
-      </div> */}
-      {comment}
-      <hr />
-      {comments.map(c => <Row>
-                                  <Col md={1} xs={3}>
-                                      <Image  src={ c.creator.avatar} roundedCircle fluid />
-                                      
-                                  </Col>
-                                  <Col md={11} xs={9}>
-                                      <p><em>{c.content}</em></p>
-                                      <p>Binh luan boi: {c.creator.username}</p>
-                                      <p>Vao luc: <Moment fromNow>{c.created_date}</Moment></p>
-                                  </Col>
-                              </Row>)}
-  </>
-)
-}
+        return (
+            <>
+                <div className="comment">
+                    <figure className="thumb-box">
+                        <Avatar
+                            alt="ImageComment"
+                            src={props.comment.user.avatar_url}
+                            sx={{ width: 52, height: 52 }}
+                        />
+                    </figure>
+                    <div className="comment-inner">
+                        <div className="comment-info clearfix">
+                            <span className="post-date">{props.comment.created_date}</span>
+                        </div>
+                        <p>
+                            {props.comment.content}
+                        </p>
+                        <div className="author-comment">
+                            <span>Bình luận bởi:</span> {props.comment.user.username}
+                        </div>
+                    </div>
+                </div>
+            </>
+        )
+    }

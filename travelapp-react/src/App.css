@@ -286,7 +286,8 @@ a {
     padding: 20px 15px;
     font-size: 14px;
     color: lightcoral;
-    text-transform: uppercase; }
+    text-transform: uppercase;
+    cursor: pointer; }
   .navbar .navbar-toggler:focus {
     outline: none; }
   .navbar .form-control-feedback {
@@ -299,7 +300,7 @@ a {
     padding: 10px 15px;
     opacity: .8;
     font-size: 12px;
-    text-transform: uppercase;
+    text-transform: capitalize;
     font-weight: 600;
     color: #66615B; }
     .navbar .navbar-nav .nav-item .nav-link p {
@@ -401,7 +402,7 @@ a {
   background-color: #B2AFAB;
   background-position: center center;
   background-size: cover;
-  min-height: 90vh;
+  min-height: 30vh;
   max-height: 999px;
   overflow: hidden;
   position: relative;

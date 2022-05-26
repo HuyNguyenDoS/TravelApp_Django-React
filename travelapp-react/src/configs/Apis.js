@@ -1,22 +1,32 @@
-import axios from "axios";
-import { combineReducers } from "redux";
+import axios from 'axios'
 
 export let endpoints = {
-    'oauth2-info': '/oauth2-info/',
-    'login': '/o/token/',
-    'current-user': '/users/current-user/',
-    'register': '/users/',
-
-    "categories": "/categories/",
     'tours': '/tours/',
-    'tour-detail': (tourId) => `/tourdetail/${tourId}/`,
-    
-    'comments': (tourId) => `/tours/${tourId}/comments/`,
-    'add-comment': (tourId) => `/tours/${tourId}/add-comment/`,
-    "rating": (tourId) => `/tours/${tourId}/rating/`
+    'tour-details': (tourId) => `/tours/${tourId}/`,
+    'add-comment-tour': (tourId) => `/tours/${tourId}/add-comment/`,
+    'tour-comments': (tourId) => `/tours/${tourId}/comments/`,
+    'update-slots': (tourId) => `/tours/${tourId}/update-slots/` ,
+    'categories': '/categories/',
+    'services': '/services/',
+    'customers': '/customers/',
+    'articals': '/articals/',
+    'artical-details': (articalId) => `/articals/${articalId}/`,
+    'like': (articalId) => `/articals/${articalId}/like/`,
+    'payers': '/payers/',
+    'get-payer': (payerId) => `/payers/${payerId}`,
+    'artical-comments': (articalId) => `/articals/${articalId}/comments/`,
+    'add-comment-artical': (articalId) => `/articals/${articalId}/add-comment/`,
+    'rating': (tourId) => `/tours/${tourId}/rating/`,
+    'users': '/users/',
+    'current-user': '/users/current-user/',
+    'login': '/o/token/',
+    'change-password': '/users/change-password/',
+    'forgot-password': '/reset-password/',
+    'verify-token': '/reset-password/validate_token/',
+    'reset-password': '/reset-password/confirm/',
+    'oauth2-info': '/oauth2-info/',
 }
 
-
 export default axios.create({
-    baseURL: 'http://127.0.0.1:8000/'
+    baseURL: "http://127.0.0.1:8000/"
 })
